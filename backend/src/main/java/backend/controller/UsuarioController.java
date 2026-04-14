@@ -2,6 +2,7 @@ package backend.controller;
 
 import backend.model.Usuario;
 import backend.repository.UsuarioRepository;
+import backend.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,16 +14,16 @@ import java.util.List;
 public class UsuarioController {
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private UsuarioService usuarioService;
 
     @GetMapping
     public List<Usuario> listarUsuarios(){
-        return usuarioRepository.findAll();
+        return usuarioService.listarTodos();
     }
 
     @PostMapping
-    public Usuario guardarUsuario(@RequestBody Usuario usuario){
-        return usuarioRepository.save(usuario);
+    public Usuario crear(@RequestBody Usuario usuario){
+        return usuarioService.guardar(usuario);
     }
 
 }
