@@ -29,7 +29,7 @@ const RegistroUsuario = () => {
     setError(null);
     setMensaje(null);
 
-    // --- VALIDACIONES FRONTEND (Se mantienen) ---
+    // --- VALIDACIONES FRONTEND ---
     if (formData.nombre.trim().length < 3) {
       setError('El nombre debe tener al menos 3 caracteres válidos.');
       setIsLoading(false);
@@ -47,13 +47,19 @@ const RegistroUsuario = () => {
       setIsLoading(false);
       return;
     }
-    // --------------------------------------------
 
     try {
       // 1. Separar la contraseña repetida (el backend no la necesita)
       const { repetirPassword, ...datosBackend } = formData;
       
-      // 2. Apuntar a la URL de tu servidor Java (usualmente 8080 en local)
+      // ==========================================
+      // NUEVO: AGREGAR EL ROL POR DEFECTO
+      // ==========================================
+      const payloadParaServidor = {
+        ...datosBackend,
+        rol: 'USUARIO' // Todo el que se registre por aquí será usuario normal
+      };
+      
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8081';
 
       // 3. HACER LA PETICIÓN REAL AL BACKEND
@@ -62,31 +68,24 @@ const RegistroUsuario = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(datosBackend), // Convertimos los datos a formato JSON
+        body: JSON.stringify(payloadParaServidor), // Se envía con el rol incluido
       });
 
-      // 4. Capturar la respuesta del servidor (sea buena o mala)
       const data = await response.json();
 
-      // 5. Evaluar la respuesta: Si no es status 200/201 (OK), lanzamos un error
       if (!response.ok) {
-        // Aquí se mostrará el mensaje que envíe Java (ej. "Este correo ya existe")
         throw new Error(data.message || 'Hubo un error al registrar el usuario en el servidor.');
       }
 
-      // 6. Si la respuesta fue exitosa:
       setMensaje('¡Cuenta creada exitosamente! Ya puedes iniciar sesión.');
       
-      // Limpiar el formulario
       setFormData({ 
         nombre: '', apellido: '', correo: '', telefono: '', password: '', repetirPassword: '' 
       });
 
     } catch (err) {
-      // Si el servidor está apagado o devuelve un error, se muestra aquí en rojo
       setError(err.message || 'No se pudo conectar con el servidor.');
     } finally {
-      // Terminó el proceso (exitoso o fallido), habilitamos el botón de nuevo
       setIsLoading(false);
     }
   };
