@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-import AgendaCitas from './pages/AgendaCitas.jsx';
+
 import Servicios from './pages/servicios.jsx';
 import Inicio from './pages/inicio.jsx'
 import Registro from './pages/registro.jsx'
@@ -9,6 +9,7 @@ import Login from './pages/login.jsx'
 import Catalogo from './pages/catalogo.jsx'
 import StockAdmin from './pages/stockAdmin.jsx'
 
+import AgendaPrincipal from './components/AgendaPrincipal';
 import Testimonios from './components/Testimonios.jsx'
 import NavBar from "./components/NavBar.jsx"
 import Footer from "./components/Footer.jsx"
@@ -45,7 +46,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/catalogo" element={<Catalogo />} />
           <Route path="/stockAdmin" element={<StockAdmin />} />
-          <Route path="/agendaCitas" element={<AgendaCitas />} />
+          <Route path="/agendaCitas" element={<AgendaPrincipal />} />
           <Route path="/testimonios" element={<Testimonios/>} />
            
 

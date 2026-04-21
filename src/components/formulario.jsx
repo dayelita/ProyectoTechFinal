@@ -107,7 +107,7 @@ const RegistroUsuario = () => {
         padding: '50px 15px', 
         backgroundImage: `
           linear-gradient(to right, rgba(140, 45, 45, 0.85), rgba(105, 36, 36, 0.81)),
-          url('https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1920&q=80')
+          url('https://i.pinimg.com/originals/11/67/ce/1167ce7055b195fe92b57ea7d18b0bd2.jpg')
         `,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
