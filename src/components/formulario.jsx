@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2'; // 🔥 Importamos SweetAlert2
 
 const RegistroUsuario = () => {
   const [formData, setFormData] = useState({
@@ -12,8 +13,7 @@ const RegistroUsuario = () => {
   });
 
   const [isLoading, setIsLoading] = useState(false);
-  const [mensaje, setMensaje] = useState(null);
-  const [error, setError] = useState(null);
+  const navigate = useNavigate(); // 🔥 Usamos navigate para mandarlo al login
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,49 +26,40 @@ const RegistroUsuario = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
-    setMensaje(null);
 
     // --- VALIDACIONES FRONTEND ---
     if (formData.nombre.trim().length < 3) {
-      setError('El nombre debe tener al menos 3 caracteres válidos.');
+      Swal.fire({ icon: 'warning', title: 'Nombre muy corto', text: 'El nombre debe tener al menos 3 caracteres válidos.', confirmButtonColor: '#722F37' });
       setIsLoading(false);
       return; 
     }
 
     if (formData.apellido.trim().length < 3) {
-      setError('El apellido debe tener al menos 3 caracteres válidos.');
+      Swal.fire({ icon: 'warning', title: 'Apellido muy corto', text: 'El apellido debe tener al menos 3 caracteres válidos.', confirmButtonColor: '#722F37' });
       setIsLoading(false);
       return; 
     }
 
     if (formData.password !== formData.repetirPassword) {
-      setError('Las contraseñas no coinciden. Por favor, verifica.');
+      Swal.fire({ icon: 'error', title: 'Error en contraseñas', text: 'Las contraseñas no coinciden. Por favor, verifica.', confirmButtonColor: '#722F37' });
       setIsLoading(false);
       return;
     }
 
     try {
-      // 1. Separar la contraseña repetida (el backend no la necesita)
       const { repetirPassword, ...datosBackend } = formData;
       
-      // ==========================================
-      // NUEVO: AGREGAR EL ROL POR DEFECTO
-      // ==========================================
       const payloadParaServidor = {
         ...datosBackend,
-        rol: 'USUARIO' // Todo el que se registre por aquí será usuario normal
+        rol: 'USUARIO'
       };
       
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8081';
 
-      // 3. HACER LA PETICIÓN REAL AL BACKEND
       const response = await fetch(`${apiUrl}/api/usuarios`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payloadParaServidor), // Se envía con el rol incluido
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payloadParaServidor),
       });
 
       const data = await response.json();
@@ -77,14 +68,31 @@ const RegistroUsuario = () => {
         throw new Error(data.message || 'Hubo un error al registrar el usuario en el servidor.');
       }
 
-      setMensaje('¡Cuenta creada exitosamente! Ya puedes iniciar sesión.');
+      // 🔥 ALERTA DE ÉXITO PRECIOSA 🔥
+      Swal.fire({
+        icon: 'success',
+        title: '¡Bienvenido a la familia!',
+        text: 'Tu cuenta en Casona JMS se creó exitosamente.',
+        confirmButtonColor: '#722F37',
+        confirmButtonText: 'Ir a Iniciar Sesión'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/login'); // Redirige automático al hacer clic
+        }
+      });
       
       setFormData({ 
         nombre: '', apellido: '', correo: '', telefono: '', password: '', repetirPassword: '' 
       });
 
     } catch (err) {
-      setError(err.message || 'No se pudo conectar con el servidor.');
+      // 🔥 ALERTA DE ERROR DE SERVIDOR 🔥
+      Swal.fire({
+        icon: 'error',
+        title: 'No se pudo registrar',
+        text: err.message || 'No se pudo conectar con el servidor.',
+        confirmButtonColor: '#722F37'
+      });
     } finally {
       setIsLoading(false);
     }
@@ -112,9 +120,6 @@ const RegistroUsuario = () => {
             <div className="card" style={{ borderRadius: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
               <div className="card-body p-5">
                 <h2 className="text-uppercase text-center mb-5" style={{ color: '#722F37' }}>Crear una cuenta</h2>
-
-                {mensaje && <div className="alert alert-success">{mensaje}</div>}
-                {error && <div className="alert alert-danger">{error}</div>}
 
                 <form onSubmit={handleSubmit}>
                   

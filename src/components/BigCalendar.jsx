@@ -130,7 +130,7 @@ export default function BigCalendar() {
     ? events.filter(e => e.estado === 'PENDIENTE')
     : events.filter(e => e.usuario && e.usuario.id.toString() === usuarioLogueado.id.toString());
 
-  // 👇 AQUÍ ESTÁ LA MAGIA DEL ORDENAMIENTO POR FECHAS 👇
+ 
   const reservasOrdenadas = [...reservasParaMostrar].sort((a, b) => new Date(a.start) - new Date(b.start));
 
   const eventStyleGetter = (event) => {
@@ -200,7 +200,7 @@ export default function BigCalendar() {
                     </tr>
                   </thead>
                   <tbody>
-                    {/* 👇 AQUÍ USAMOS reservasOrdenadas PARA DIBUJAR LA TABLA 👇 */}
+                    
                     {reservasOrdenadas.map((res) => (
                       <tr key={res.id}>
                         {isAdmin && (

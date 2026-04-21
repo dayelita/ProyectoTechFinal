@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2'; // 🔥 Importamos SweetAlert2
 
 const LoginUsuario = () => {
   const [formData, setFormData] = useState({
@@ -8,8 +9,6 @@ const LoginUsuario = () => {
   });
 
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -22,12 +21,10 @@ const LoginUsuario = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
 
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8081';
 
-      // 1. HACER LA PETICIÓN POST AL BACKEND
       const response = await fetch(`${apiUrl}/api/usuarios/login`, {
         method: 'POST',
         headers: {
@@ -38,36 +35,42 @@ const LoginUsuario = () => {
 
       const data = await response.json();
 
-      // 2. SI LAS CREDENCIALES SON INCORRECTAS
       if (!response.ok) {
         throw new Error(data.message || 'Correo o contraseña incorrectos');
       }
 
-      // ==========================================
-      // 3. SI EL LOGIN ES EXITOSO: GUARDAR DATOS
-      // ==========================================
       localStorage.setItem('token', data.token);
       
       if (data.usuario) {
-         // 👇 ESTA ES LA LÍNEA CRÍTICA PARA QUE NO FALLE LA RESERVA 👇
          localStorage.setItem('idUsuario', data.usuario.id); 
-         
          localStorage.setItem('nombreUsuario', data.usuario.nombre);
          localStorage.setItem('apellidoUsuario', data.usuario.apellido);
          localStorage.setItem('correoUsuario', data.usuario.correo);
          localStorage.setItem('telefonoUsuario', data.usuario.telefono);
-         
-         // GUARDAMOS EL ROL DEL USUARIO
          localStorage.setItem('rolUsuario', data.usuario.rol || 'USUARIO'); 
       }
 
-      // ==========================================
-      // 4. REDIRIGIR AL HOME AUTOMÁTICAMENTE
-      // ==========================================
-      navigate('/'); 
+      // 🔥 ALERTA DE BIENVENIDA (Se cierra sola) 🔥
+      Swal.fire({
+        icon: 'success',
+        title: `¡Hola de nuevo, ${data.usuario?.nombre || 'Usuario'}!`,
+        text: 'Iniciando sesión...',
+        timer: 2000, 
+        timerProgressBar: true,
+        showConfirmButton: false,
+        willClose: () => {
+          navigate('/'); // Redirige al calendario o home después de cerrarse
+        }
+      });
 
     } catch (err) {
-      setError(err.message || 'Error al conectar con el servidor.');
+      // 🔥 ALERTA DE CREDENCIALES INCORRECTAS 🔥
+      Swal.fire({
+        icon: 'error',
+        title: 'Acceso Denegado',
+        text: err.message || 'Error al conectar con el servidor.',
+        confirmButtonColor: '#722F37'
+      });
     } finally {
       setIsLoading(false);
     }
@@ -97,8 +100,6 @@ const LoginUsuario = () => {
                 <h2 className="text-uppercase text-center mb-5" style={{ color: '#722F37', fontWeight: 'bold' }}>
                   Iniciar Sesión
                 </h2>
-
-                {error && <div className="alert alert-danger text-center">{error}</div>}
 
                 <form onSubmit={handleSubmit}>
                   
