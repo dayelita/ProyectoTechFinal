@@ -85,18 +85,18 @@ export default function AgendaCliente() {
     finally { setIsLoading(false); }
   };
 
-  // 👇 1. MAGIA DE PRIVACIDAD: Enmascaramos los eventos de los demás
+
   const eventosCalendarioPrivado = events
     .filter(e => e.estado !== 'RECHAZADO')
     .map(e => {
       if (e.usuario?.id?.toString() === usuarioLogueado.id?.toString()) {
-        return e; // Es mi reserva, la veo con mi nombre
+        return e; 
       } else {
-        return { ...e, title: '❌ No Disponible' }; // Es de otro, oculto los datos
+        return { ...e, title: '❌ No Disponible' }; 
       }
     });
 
-  // 👇 2. HISTORIAL: Filtramos estrictamente las reservas para la tabla de abajo
+  
   const misReservasOrdenadas = events
     .filter(e => e.usuario && e.usuario.id?.toString() === usuarioLogueado.id?.toString())
     .sort((a, b) => new Date(a.start) - new Date(b.start));
