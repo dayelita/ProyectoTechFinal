@@ -99,16 +99,20 @@ export default function NavBar() {
                 <NavLink className={({ isActive }) => `nav-link nav-link-custom${isActive ? ' active-link' : ''}`} to="/stockAdmin">
                   Control Stock
                 </NavLink>
+                <NavLink className={({ isActive }) => `nav-link nav-link-custom${isActive ? ' active-link' : ''}`} to="/galeria">
+                  Gestión Galería
+                </NavLink>
               </>
             ) : (
               <>
                 <NavLink className={({ isActive }) => `nav-link nav-link-custom${isActive ? ' active-link' : ''}`} to="/servicios">
                   Servicios
                 </NavLink>
-                <NavLink className={({ isActive }) => `nav-link nav-link-custom${isActive ? ' active-link' : ''}`} to="/catalogo">
-                  Catálogo
+                
+                <NavLink className={({ isActive }) => `nav-link nav-link-custom${isActive ? ' active-link' : ''}`} to="/galeria">
+                  Galería
                 </NavLink>
-                <NavLink className={({ isActive }) => `nav-link nav-link-custom${isActive ? ' active-link' : ''}`} to="/agendaCitas">
+                <NavLink className={({ isActive }) => `nav-link nav-link-custom${isActive ? ' active-link' : ''}`} to="/agendaCliente">
                   Agenda
                 </NavLink>
               </>

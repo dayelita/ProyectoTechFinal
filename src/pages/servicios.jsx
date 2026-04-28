@@ -1,8 +1,8 @@
 import React from 'react'
-
+import ServiciosPagina from '../components/serviciosPagina.jsx'
 function servicios() {
   return (
-    <div>servicios</div>
+    <ServiciosPagina/>
   )
 }
 
