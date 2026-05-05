@@ -51,7 +51,7 @@ export default function NavBar() {
     }
   }, [location]);
 
-  // 🔥 FUNCIÓN PARA CERRAR SESIÓN
+  // 🔥 FUNCIÓN PARA CERRAR SESIÓN (Actualizada con recarga completa)
   const handleLogout = () => {
     Swal.fire({
       title: '¿Cerrar Sesión?',
@@ -64,12 +64,21 @@ export default function NavBar() {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
+        // 1. Limpiamos la memoria local y los estados de React
         localStorage.clear();
         setUsuario(null);
         setRolUsuario(null);
         
-        Swal.fire({ icon: 'success', title: 'Sesión Cerrada', timer: 1500, showConfirmButton: false });
-        navigate('/'); 
+        // 2. Mostramos la alerta de éxito y esperamos a que termine (1.5 segundos)
+        Swal.fire({ 
+          icon: 'success', 
+          title: 'Sesión Cerrada', 
+          timer: 1500, 
+          showConfirmButton: false 
+        }).then(() => {
+          // 3. 🔥 Forzamos una recarga dura para limpiar toda la caché y volver al inicio
+          window.location.href = '/'; 
+        });
       }
     });
   };
