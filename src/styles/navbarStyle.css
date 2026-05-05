@@ -1,0 +1,66 @@
+/* ─── NavBar Styles ─── /
+
+.navbar {
+  background-color: blanchedalmond;
+  font-family: 'Georgia', serif;
+}
+
+/ Link base /
+.nav-link-custom {
+  position: relative;
+  color: #4a3728 !important;
+  font-weight: 500;
+  padding: 6px 12px !important;
+  transition: color 0.25s ease;
+}
+
+/ Subrayado animado al hacer hover /
+.nav-link-custom::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  background-color: #722F37;
+  transform: scaleX(0);
+  transition: transform 0.25s ease;
+  border-radius: 2px;
+}
+
+.nav-link-custom:hover::after,
+.nav-link-custom.active-link::after {
+  transform: scaleX(1);
+}
+
+.nav-link-custom:hover {
+  color: #722F37 !important;
+}
+
+/ Link activo /
+.nav-link-custom.active-link {
+  color: #722F37 !important;
+  font-weight: 700;
+}
+
+/ Navbar pegada al hacer scroll /
+.navbar.sticky-top {
+  z-index: 1030;
+}
+
+/ Mobile: ajuste de espaciado */
+@media (max-width: 991px) {
+  .nav-link-custom::after {
+    display: none;
+  }
+
+  .nav-link-custom.active-link {
+    border-left: 3px solid #722F37;
+    padding-left: 10px !important;
+  }
+
+  .navbar-nav {
+    padding: 12px 0;
+    gap: 4px;
+  }
+}
