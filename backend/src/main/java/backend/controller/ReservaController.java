@@ -3,44 +3,46 @@ package backend.controller;
 import backend.model.Reserva;
 import backend.service.ReservaService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/reservas")
 @CrossOrigin(origins = "*")
 public class ReservaController {
-
     @Autowired
     private ReservaService reservaService;
 
-    @PostMapping("/solicitar")
-    public ResponseEntity<?> solicitarReserva(@RequestBody Reserva reserva) {
-        try {
-            Reserva nuevaReserva = reservaService.crearReserva(reserva);
-            return ResponseEntity.ok(nuevaReserva);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    @PostMapping("/crear")
+    public ResponseEntity<?> crear(@RequestBody Reserva reserva){
+        try{
+            Reserva nueva = reservaService.crearReserva(reserva);
+            return ResponseEntity.ok(nueva);
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @PutMapping("/estado/{id}")
-    public ResponseEntity<?> cambiarEstadoReserva(@PathVariable Long id, @RequestBody Map<String, String> body) {
-        try {
-            String nuevoEstado = body.get("estado");
-            Reserva reservaActualizada = reservaService.cambiarEstado(id, nuevoEstado);
-            return ResponseEntity.ok(reservaActualizada);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Reserva>> obtenerTodas() {
+    @GetMapping("/todos")
+    public ResponseEntity<List<Reserva>> obtenerTodas(){
         return ResponseEntity.ok(reservaService.obtenerTodas());
+    }
+    @GetMapping("/pendientes")
+    public ResponseEntity<List<Reserva>> listarPendientes(){
+        List<Reserva> pendientes = reservaService.obtenerTodas().stream()
+                .filter(reserva -> "PENDIENTE".equals(reserva.getEstado()))
+                .toList();
+        return ResponseEntity.ok(pendientes);
+    }
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<?> actualizarEstado(@PathVariable Long id, @RequestBody String nuevoEstado){
+        try{
+            String estadoLimpio = nuevoEstado.replace("\"","");
+            return ResponseEntity.ok(reservaService.cambiarEstado(id,estadoLimpio));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
