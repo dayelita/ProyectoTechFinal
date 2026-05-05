@@ -6,7 +6,7 @@ import backend.repository.ReservaRepository;
 import backend.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // <-- Importante
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -21,7 +21,10 @@ public class ReservaService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    // 👇 @Transactional asegura que si algo falla a la mitad, la base de datos se echa para atrás y no guarda basura
+    // 🔥 1. Inyectamos tu nuevo servicio de correos
+    @Autowired
+    private EmailService emailService;
+
     @Transactional(rollbackFor = Exception.class)
     public Reserva crearReserva(Reserva nueva) throws Exception {
         if (nueva == null || nueva.getFechaHoraInicio() == null || nueva.getFechaHoraFin() == null){
@@ -60,7 +63,23 @@ public class ReservaService {
         nueva.setUsuario(usuarioReal);
         nueva.setEstado("PENDIENTE");
 
-        return reservaRepository.save(nueva);
+        // Guardamos la reserva primero
+        Reserva reservaGuardada = reservaRepository.save(nueva);
+
+        // 🔥 2. ENVIAR CORREO AL ADMINISTRADOR (TÚ)
+        try {
+            // Extraemos la fecha y hora para que se vea bien en el correo
+            String fechaStr = reservaGuardada.getFechaHoraInicio().toLocalDate().toString();
+            String horaStr = reservaGuardada.getFechaHoraInicio().toLocalTime().toString();
+            String nombreCompleto = usuarioReal.getNombre() + " " + (usuarioReal.getApellido() != null ? usuarioReal.getApellido() : "");
+
+            // Disparamos el correo
+            emailService.enviarAvisoAdmin(nombreCompleto, fechaStr, horaStr);
+        } catch (Exception e) {
+            System.err.println("AVISO: La reserva se guardó, pero hubo un error enviando el correo al admin: " + e.getMessage());
+        }
+
+        return reservaGuardada;
     }
 
     public List<Reserva> obtenerTodas(){
@@ -75,7 +94,27 @@ public class ReservaService {
         if (!nuevoEstado.equals("APROBADO") && !nuevoEstado.equals("RECHAZADO")){
             throw new Exception("Estado no válido");
         }
+
         reserva.setEstado(nuevoEstado);
-        return reservaRepository.save(reserva);
+
+        // Guardamos el nuevo estado en la base de datos
+        Reserva reservaActualizada = reservaRepository.save(reserva);
+
+        // 🔥 3. ENVIAR CORREO DE RESPUESTA AL CLIENTE
+        try {
+            Usuario cliente = reservaActualizada.getUsuario();
+            String fechaStr = reservaActualizada.getFechaHoraInicio().toLocalDate().toString();
+            String horaStr = reservaActualizada.getFechaHoraInicio().toLocalTime().toString();
+            String nombreCompleto = cliente.getNombre();
+
+            boolean esAceptada = nuevoEstado.equals("APROBADO");
+
+            // Disparamos el correo hacia el cliente
+            emailService.enviarRespuestaCliente(cliente.getCorreo(), nombreCompleto, fechaStr, horaStr, esAceptada);
+        } catch (Exception e) {
+            System.err.println("AVISO: El estado se actualizó, pero hubo un error enviando el correo al cliente: " + e.getMessage());
+        }
+
+        return reservaActualizada;
     }
 }
