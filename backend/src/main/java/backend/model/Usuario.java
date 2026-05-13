@@ -16,6 +16,8 @@ public class Usuario {
     private String telefono;
     private String rol;
 
+
+
     public Long getId(){
         return id;
     }
@@ -23,6 +25,8 @@ public class Usuario {
     public String getNombre() {
         return nombre;
     }
+
+
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
