@@ -29,13 +29,16 @@ public class ReservaController {
     public ResponseEntity<List<Reserva>> obtenerTodas(){
         return ResponseEntity.ok(reservaService.obtenerTodas());
     }
-    @GetMapping("/pendientes")
-    public ResponseEntity<List<Reserva>> listarPendientes(){
-        List<Reserva> pendientes = reservaService.obtenerTodas().stream()
-                .filter(reserva -> "PENDIENTE".equals(reserva.getEstado()))
-                .toList();
-        return ResponseEntity.ok(pendientes);
+
+    // 🔥 NUEVO ENDPOINT PARA ELIMINAR
+    @DeleteMapping("/eliminar/{id}")
+    public ResponseEntity<?> eliminar(@PathVariable Long id) {
+        if (reservaService.eliminarReserva(id)) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
     }
+
     @PatchMapping("/{id}/estado")
     public ResponseEntity<?> actualizarEstado(@PathVariable Long id, @RequestBody String nuevoEstado){
         try{
