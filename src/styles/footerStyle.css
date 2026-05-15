@@ -1,0 +1,155 @@
+/* ─── Footer Styles (Modo Claro - Casi Blanco y Azul Noche) ─── */
+
+.footer-main {
+  background-color: #F3E7E4; /* 🔥 Fondo Casi-Blanco */
+  color: #16181D; /* Texto base oscuro */
+  border-top: 1px solid rgba(212, 175, 55, 0.3); /* Línea dorada sutil arriba para separar del contenido */
+}
+
+/* Marca Principal */
+.footer-brand {
+  font-family: 'Georgia', serif;
+  color: #16181D; /* Azul Noche */
+  font-size: 1.4rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+/* Texto descriptivo */
+.footer-text {
+  color: rgba(22, 24, 29, 0.7); /* Azul Noche sutilmente opaco */
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+
+/* Encabezados de columna */
+.footer-heading {
+  font-family: 'Georgia', serif;
+  color: #16181D; /* Azul Noche */
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  border-bottom: 2px solid #D4AF37; /* Línea dorada más marcada */
+  padding-bottom: 8px;
+  display: inline-block;
+}
+
+/* Links de navegación */
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 8px;
+}
+
+.footer-links a {
+  color: rgba(22, 24, 29, 0.75); /* Azul Noche opaco */
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.3s ease, transform 0.3s ease;
+  display: inline-block;
+}
+
+/* Animación sutil al pasar el mouse */
+.footer-links a:hover {
+  color: #D4AF37; /* Se enciende en dorado */
+  transform: translateX(4px);
+}
+
+/* Contacto */
+.footer-contact {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-contact li {
+  display: flex;
+  align-items: center; 
+  justify-content: center; 
+  text-align: center; 
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: 0.88rem;
+  color: rgba(22, 24, 29, 0.8);
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.footer-contact a {
+  color: rgba(22, 24, 29, 0.8);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-contact a:hover {
+  color: #D4AF37;
+}
+
+/* Iconos sociales */
+.social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: transparent;
+  border: 1px solid rgba(22, 24, 29, 0.3); /* Borde oscuro transparente */
+  color: #16181D; /* Icono oscuro */
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+  background-color: #16181D; /* Fondo se vuelve Azul Noche */
+  color: #D4AF37; /* Icono se vuelve dorado */
+  border-color: #16181D;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Sombra suave */
+}
+
+/* Divider / Separador inferior */
+.footer-divider {
+  border-color: rgba(22, 24, 29, 0.15); /* Línea oscura muy tenue */
+  opacity: 1;
+}
+
+/* Copyright */
+.footer-copy {
+  color: rgba(22, 24, 29, 0.6);
+  font-size: 0.85rem;
+}
+
+/* Botón scroll top (La flechita para subir) */
+.scroll-top-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: none;
+  background-color: #16181D; /* Ahora es Azul Noche */
+  color: #D4AF37; /* Flecha Dorada */
+  font-size: 1.3rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.scroll-top-btn:hover {
+  background-color: #D4AF37; /* Cambia a Dorado al pasar el mouse */
+  color: #16181D;
+  transform: translateY(-4px);
+}
