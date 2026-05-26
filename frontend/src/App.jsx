@@ -12,6 +12,7 @@ import Registro from './pages/registro.jsx'
 import Login from './pages/login.jsx'
 import StockAdmin from './pages/stockAdmin.jsx'
 
+import ServiciosAdmin from './components/ServiciosAdmin';
 import AgendaCliente from './components/AgendaCliente.jsx'
 import AgendaAdmin from './components/AgendaAdmin.jsx'
 import AgendaPrincipal from './components/AgendaPrincipal';
@@ -81,7 +82,17 @@ function App() {
               </ProtectedRoute>
             } 
           />
+          <Route 
+            path="/serviciosAdmin" 
+            element={
+              <ProtectedRoute rolRequerido="ADMIN">
+                <ServiciosAdmin />
+              </ProtectedRoute>
+            } 
+          />
         </Routes>
+        
+        
       </div>
      
       <Footer />

@@ -21,6 +21,7 @@ const Testimonios = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
 
   // 🔥 1. Cargar testimonios desde Spring Boot al iniciar
   useEffect(() => {
@@ -29,7 +30,7 @@ const Testimonios = () => {
 
   const cargarTestimonios = async () => {
     try {
-      const response = await fetch('http://localhost:8081/api/testimonios/todos');
+      const response = await fetch(`${API_URL}/api/testimonios/todos`);
       if (response.ok) {
         const data = await response.json();
         setTestimonios(data.length > 0 ? data : TESTIMONIOS_DEMO);
@@ -64,14 +65,16 @@ const Testimonios = () => {
         text: 'Para dejar una reseña, por favor inicia sesión con tu cuenta.',
         icon: 'info',
         showCancelButton: true,
-        confirmButtonColor: '#722F37',
-        cancelButtonColor: '#6c757d',
+        confirmButtonColor: '#16181D', // Azul Noche Profundo
+        cancelButtonColor: '#D4AF37', // Dorado
+        background: '#F3E7E4', // Casi-Blanco
+        color: '#16181D',
         confirmButtonText: 'Iniciar Sesión',
         cancelButtonText: 'Cancelar'
       }).then((result) => {
         if (result.isConfirmed) navigate('/login');
       });
-      return; // Detiene la ejecución para no abrir el modal
+      return; 
     }
 
     setIsModalOpen(true);
@@ -88,13 +91,19 @@ const Testimonios = () => {
   // 🔥 5. Guardar Reseña enviándola al Backend
   const handleSave = async () => {
     if (!rating || !newText.trim()) {
-      Swal.fire({ icon: 'warning', title: 'Faltan datos', text: 'Por favor, escribe tu experiencia y selecciona una calificación.', confirmButtonColor: '#722F37' });
+      Swal.fire({ 
+        icon: 'warning', 
+        title: 'Faltan datos', 
+        text: 'Por favor, escribe tu experiencia y selecciona una calificación.', 
+        confirmButtonColor: '#16181D',
+        background: '#F3E7E4',
+        color: '#16181D'
+      });
       return;
     }
 
     setIsSubmitting(true);
 
-    // Armamos el objeto con los datos del localStorage
     const nombreUsuario = localStorage.getItem('nombreUsuario') || 'Usuario';
     const apellidoUsuario = localStorage.getItem('apellidoUsuario') || '';
     const idUsuario = localStorage.getItem('idUsuario');
@@ -103,27 +112,26 @@ const Testimonios = () => {
       estrellas: rating,
       comentario: newText,
       nombre: `${nombreUsuario} ${apellidoUsuario}`.trim(),
-      rol: 'Cliente Casona JMS', // Rol fijo para las reseñas
-      usuario: { id: idUsuario } // Relación con el backend
+      rol: 'Cliente Casona JMS', 
+      usuario: { id: idUsuario } 
     };
 
     try {
-      const response = await fetch('http://localhost:8081/api/testimonios/crear', {
+      const response = await fetch(`${API_URL}/api/testimonios/crear`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(nuevoTestimonio)
       });
 
       if (response.ok) {
-        Swal.fire({ icon: 'success', title: '¡Gracias por tu reseña!', timer: 2000, showConfirmButton: false });
-        cargarTestimonios(); // Recargamos para ver la nueva reseña
+        Swal.fire({ icon: 'success', title: '¡Gracias por tu reseña!', timer: 2000, showConfirmButton: false, background: '#F3E7E4', color: '#16181D' });
+        cargarTestimonios(); 
       } else {
         throw new Error('Error al guardar en BD');
       }
     } catch (error) {
-      // Fallback: Si el backend falla, lo agregamos visualmente de todos modos
       setTestimonios([...testimonios, nuevoTestimonio]);
-      Swal.fire({ icon: 'success', title: '¡Reseña publicada! (Modo Local)', timer: 2000, showConfirmButton: false });
+      Swal.fire({ icon: 'success', title: '¡Reseña publicada! (Modo Local)', timer: 2000, showConfirmButton: false, background: '#F3E7E4', color: '#16181D' });
     } finally {
       setIsSubmitting(false);
       handleCloseModal();
@@ -135,41 +143,51 @@ const Testimonios = () => {
   return (
     <div className="container mt-5 mb-5 testimonios-wrapper">
       
-      <div className="card shadow-lg border-0 w-100" style={{ borderRadius: '15px', backgroundColor: '#FFFFFF' }}>
+      <div className="card shadow-sm border-0 w-100" style={{ borderRadius: '15px', backgroundColor: '#FFFFFF' }}>
         <div className="card-body p-4 p-md-5">
 
           <style>{`
-            .testimonios-wrapper { font-family: 'Inter', sans-serif; background: transparent; display: flex; justify-content: center; padding: 20px 0; }
+            .testimonios-wrapper { font-family: 'Segoe UI', sans-serif; background: transparent; display: flex; justify-content: center; padding: 20px 0; }
             .app-container { width: 100%; max-width: 1200px; text-align: center; margin: 0 auto; }
-            .tag { color: #722F37; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; }
-            .title-h1 { font-size: 2.5rem; color: #1a1a1a; margin: 15px 0 40px; }
+            .tag { color: #D4AF37; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; }
+            .title-h1 { font-family: 'Georgia', serif; font-size: 2.5rem; color: #16181D; margin: 10px 0 40px; font-weight: bold; }
             .carousel-viewport { width: 100%; overflow: hidden; position: relative; padding: 20px 0; }
             .carousel-track { display: flex; transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
-            .card-t { min-width: 350px; max-width: 350px; margin: 0 15px; flex-shrink: 0; opacity: 0.2; filter: blur(5px); transform: scale(0.9); transition: all 0.6s ease; }
+            .card-t { min-width: 350px; max-width: 350px; margin: 0 15px; flex-shrink: 0; opacity: 0.3; filter: blur(3px); transform: scale(0.9); transition: all 0.6s ease; }
             .card-t.active { opacity: 1; filter: blur(0); transform: scale(1); }
-            .card-inner { background: white; padding: 30px; border-radius: 20px; text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f0f0f0; }
-            .stars { color: #D4AF37; margin-bottom: 15px; font-size: 1.1rem; }
-            .comment { color: #4b5563; line-height: 1.6; font-size: 1rem; min-height: 90px; margin: 0; }
+            .card-inner { background: white; padding: 30px; border-radius: 20px; text-align: left; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #f0f0f0; }
+            .stars { color: #D4AF37; margin-bottom: 15px; font-size: 1.2rem; letter-spacing: 2px; }
+            .comment { color: #4b5563; line-height: 1.6; font-size: 1rem; min-height: 90px; margin: 0; font-style: italic; }
             .user { display: flex; align-items: center; margin-top: 25px; }
-            .avatar { width: 42px; height: 42px; background: #F4E1E6; color: #722F37; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; margin-right: 12px; }
-            .user-info strong { display: block; font-size: 0.95rem; color: #1a1a1a; }
-            .user-info span { font-size: 0.85rem; color: #4b5563; }
-            .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: #F4E1E6; color: #722F37; border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; z-index: 10; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; }
-            .nav-btn:hover { background: #722F37; color: white; transform: translateY(-50%) scale(1.1); }
+            
+            /* Avatar invertido: Fondo noche, letra dorada */
+            .avatar { width: 45px; height: 45px; background: #16181D; color: #D4AF37; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 12px; font-size: 1.2rem; }
+            .user-info strong { display: block; font-size: 0.95rem; color: #16181D; }
+            .user-info span { font-size: 0.85rem; color: #D4AF37; font-weight: 500; }
+            
+            /* Botones de navegación del carrusel */
+            .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: #16181D; color: #D4AF37; border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; }
+            .nav-btn:hover { background: #D4AF37; color: #16181D; transform: translateY(-50%) scale(1.1); }
             .nav-btn.prev { left: 10px; }
             .nav-btn.next { right: 10px; }
-            .btn-t-primary { background: #722F37; color: white; padding: 12px 28px; border-radius: 50px; font-weight: 600; cursor: pointer; border: none; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(114, 47, 55, 0.2); }
-            .btn-t-primary:hover { transform: translateY(-2px); filter: brightness(1.1); }
-            .btn-t-secondary { background: #f3f4f6; color: #4b5563; padding: 12px 28px; border-radius: 50px; font-weight: 600; cursor: pointer; border: none; transition: all 0.3s ease; }
-            .btn-t-secondary:hover { background: #e5e7eb; }
-            .modal-t { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+            
+            /* Botones principales */
+            .btn-t-primary { background: #16181D; color: #D4AF37; padding: 12px 30px; border-radius: 25px; font-weight: bold; cursor: pointer; border: 2px solid #16181D; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
+            .btn-t-primary:hover { background: #D4AF37; color: #16181D; border-color: #D4AF37; transform: translateY(-2px); }
+            .btn-t-primary:disabled { opacity: 0.7; cursor: not-allowed; }
+            
+            .btn-t-secondary { background: transparent; color: #16181D; padding: 12px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; border: 2px solid #ddd; transition: all 0.3s ease; }
+            .btn-t-secondary:hover { border-color: #16181D; }
+            
+            /* Modal */
+            .modal-t { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(22, 24, 29, 0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 1050; }
             .modal-t.open { display: flex; }
-            .modal-box { background: white; padding: 35px; border-radius: 25px; width: 420px; }
-            .star-rating { font-size: 2.5rem; color: #ddd; margin-bottom: 20px; text-align: center; cursor: pointer; }
-            .star-rating span.on { color: #D4AF37; }
-            .modal-box textarea { width: 100%; padding: 15px; margin-bottom: 20px; border: 1.5px solid #eee; border-radius: 12px; box-sizing: border-box; font-family: 'Inter', sans-serif; resize: none; }
-            .modal-box textarea:focus { outline: none; border-color: #722F37; }
-            .modal-footer { display: flex; justify-content: flex-end; gap: 10px; }
+            .modal-box { background: #ffffff; padding: 40px; border-radius: 20px; width: 450px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+            .star-rating { font-size: 2.5rem; color: #e0e0e0; margin-bottom: 20px; text-align: center; cursor: pointer; transition: color 0.2s; }
+            .star-rating span:hover, .star-rating span.on { color: #D4AF37; }
+            .modal-box textarea { width: 100%; padding: 15px; margin-bottom: 25px; border: 1.5px solid #ddd; border-radius: 12px; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; resize: none; transition: border-color 0.3s; }
+            .modal-box textarea:focus { outline: none; border-color: #D4AF37; box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1); }
+            .modal-footer { display: flex; justify-content: flex-end; gap: 12px; }
           `}</style>
 
           <main className="app-container">
@@ -207,12 +225,12 @@ const Testimonios = () => {
               Escribir testimonio
             </button>
 
-            {/* 🔥 MODAL SIMPLIFICADO Y CONECTADO A LOCALSTORAGE */}
+            {/* MODAL */}
             <div className={`modal-t ${isModalOpen ? 'open' : ''}`}>
               <div className="modal-box">
-                <h3 style={{color: '#722F37', fontWeight: 'bold', marginBottom: '5px'}}>Cuéntanos tu experiencia</h3>
+                <h3 style={{ color: '#16181D', fontFamily: "'Georgia', serif", fontWeight: 'bold', marginBottom: '10px' }}>Cuéntanos tu experiencia</h3>
                 <p className="text-muted small mb-4">
-                  Publicando como: <strong style={{color: '#1a1a1a'}}>{localStorage.getItem('nombreUsuario')} {localStorage.getItem('apellidoUsuario')}</strong>
+                  Publicando como: <strong style={{ color: '#D4AF37' }}>{localStorage.getItem('nombreUsuario')} {localStorage.getItem('apellidoUsuario')}</strong>
                 </p>
                 
                 <div className="star-rating">

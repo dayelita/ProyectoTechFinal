@@ -24,7 +24,7 @@ public class EmailService {
             helper.setSubject("🔔 Nueva Solicitud de Reserva - Casona JMS");
 
             String html = "<h3>Tienes una nueva solicitud de hora presencial</h3>"
-                    + "<p<st>rong>Cliente:</strong> " + nombreCliente + "</p>"
+                    + "<p><strong>Cliente:</strong> " + nombreCliente + "</p>"
                     + "<p><strong>Fecha solicitada:</strong> " + fecha + "</p>"
                     + "<p><strong>Hora solicitada:</strong> " + hora + "</p>"
                     + "<p>Por favor, ingresa al Panel de Administración para Aceptar o Rechazar esta solicitud.</p>";
@@ -109,4 +109,6 @@ public class EmailService {
             System.err.println("Error al enviar correo de moderación: " + e.getMessage());
         }
     }
-}
+            }
+
+
