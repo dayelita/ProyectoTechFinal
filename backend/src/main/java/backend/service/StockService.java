@@ -19,8 +19,7 @@ public class StockService {
         return stockRepository.findAll();
     }
     public Stock guardar(Stock producto){
-        // Aquí podrías poner lógica, por ejemplo:
-        // if(producto.getPrecio() < 0) throw new RuntimeException("Precio inválido");
+
         return stockRepository.save(producto);
     }
     public Optional<Stock> obtenerPorId(Long id) {

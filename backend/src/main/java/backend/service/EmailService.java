@@ -13,18 +13,18 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    // 1. CORREO PARA TI (El Administrador)
+    //  CORREO PARA TI (El Administrador)
     public void enviarAvisoAdmin(String nombreCliente, String fecha, String hora) {
         try {
             MimeMessage mensaje = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
 
-            // 🔥 Aquí va tu correo personal como Admin
+            //  Aquí va tu correo personal como Admin
             helper.setTo("erammarcorojasp@gmail.com");
             helper.setSubject("🔔 Nueva Solicitud de Reserva - Casona JMS");
 
             String html = "<h3>Tienes una nueva solicitud de hora presencial</h3>"
-                    + "<p><strong>Cliente:</strong> " + nombreCliente + "</p>"
+                    + "<p<st>rong>Cliente:</strong> " + nombreCliente + "</p>"
                     + "<p><strong>Fecha solicitada:</strong> " + fecha + "</p>"
                     + "<p><strong>Hora solicitada:</strong> " + hora + "</p>"
                     + "<p>Por favor, ingresa al Panel de Administración para Aceptar o Rechazar esta solicitud.</p>";
@@ -38,7 +38,7 @@ public class EmailService {
         }
     }
 
-    // 2. CORREO PARA EL CLIENTE (La Respuesta)
+    //  CORREO PARA EL CLIENTE (La Respuesta)
     public void enviarRespuestaCliente(String correoCliente, String nombreCliente, String fecha, String hora, boolean esAceptada) {
         try {
             MimeMessage mensaje = mailSender.createMimeMessage();
@@ -72,6 +72,41 @@ public class EmailService {
 
         } catch (MessagingException e) {
             System.err.println("Error al responder al cliente: " + e.getMessage());
+        }
+    }
+    //CORREO PARA EL CLIENTE (moderacion de reseñas)
+    public void enviarCorreoModeracionReseñas(String correoCliente,String nombreCliente, boolean esAceptada, String motivo){
+        try{
+            MimeMessage mensaje = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
+
+            helper.setTo(correoCliente);
+
+            String asunto = esAceptada ? "¡Tu reseña ha sido publicada! ⭐":"Información sobre tu reseña en Casona JMS";
+            helper.setSubject(asunto);
+            String contenido;
+            if (esAceptada){
+                contenido = "<p>¡Hola <strong>" + nombreCliente + "</strong>! Tu testimonio ha sido aprobado y ya se encuentra visible en nuestra página web. ¡Gracias por compartir tu experiencia!</p>";
+            } else {
+                contenido = "<p>Hola <strong>" + nombreCliente + "</strong>, te informamos que tu reseña no pudo ser publicada.</p>"
+                        + "<p><strong>Motivo del moderador:</strong> " + motivo + "</p>"
+                        + "<p>Te invitamos a escribir una nueva experiencia cumpliendo con nuestras normas comunitarias.</p>";
+            }
+
+            String html = "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd;'>"
+                    + "<div style='background-color: #16181D; color: #D4AF37; padding: 15px; text-align: center;'>"
+                    + "<h2>Espacio Casona JMS</h2></div>"
+                    + "<div style='padding: 20px;'>"
+                    + contenido
+                    + "<p>Saludos cordiales,<br>El equipo de Espacio Casona JMS</p>"
+                    + "</div></div>";
+
+            helper.setText(html, true);
+            mailSender.send(mensaje);
+            System.out.println("Correo de moderación enviado a: " + correoCliente);
+
+        } catch (MessagingException e) {
+            System.err.println("Error al enviar correo de moderación: " + e.getMessage());
         }
     }
 }
