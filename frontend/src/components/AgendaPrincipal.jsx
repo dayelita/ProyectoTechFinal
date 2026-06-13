@@ -3,14 +3,14 @@ import AgendaAdmin from './AgendaAdmin';
 import AgendaCliente from './AgendaCliente';
 
 export default function AgendaPrincipal() {
-  // Miramos la pulsera del usuario
+  // VERA EL ROL DEL USUARIO
   const rol = localStorage.getItem('rolUsuario');
 
-  // Si es administrador, le mostramos la vista con la tabla y el calendario de lectura
+  // MOSTRARA SI ES ADMIN LA AGENDA ADMIN
   if (rol === 'ADMIN') {
     return <AgendaAdmin />;
   } 
-  // Si es un cliente o visita, le mostramos el calendario para pedir horas
+  // MOSTRARA SI ES CLIENTE O UN VISITANTE LA AGENDA DE CLIENTE
   else {
     return <AgendaCliente />;
   }

@@ -18,10 +18,19 @@ const GestionInventario = () => {
 
   const cargarInventario = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/stock/todos`);
+      // VEMOS EL TOKEN PARA VER EL INVENTARIO
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch(`${API_URL}/api/stock/todos`, {
+        headers: {
+          'Authorization': `Bearer ${token}` // INYECCION PARA LA PETICION GET CON EL TOKEN 
+        }
+      });
       if (response.ok) {
         const data = await response.json();
         setProductos(data);
+      } else if (response.status === 401 || response.status === 403) {
+        Swal.fire({ icon: 'error', title: 'Acceso Denegado', text: 'Tu sesión ha expirado o no tienes permisos.', background: '#F3E7E4' });
       }
     } catch (error) {
       console.error("Error al cargar stock:", error);
@@ -31,9 +40,15 @@ const GestionInventario = () => {
   const handleAgregar = async (e) => {
     e.preventDefault();
     try {
+      // VEMOS EL TOKEN PARA PODER CREAR UN PRODUCTO
+      const token = localStorage.getItem('token');
+      
       const response = await fetch(`${API_URL}/api/stock/crear`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // INYECCION PARA LA PETICION POST CON EL TOKEN  
+        },
         body: JSON.stringify(nuevoProd)
       });
       
@@ -56,9 +71,15 @@ const GestionInventario = () => {
 
   const guardarCambios = async (id) => {
     try {
+      // VEMOS EL TOKEN PARA PODER EDITAR UN PRODUCTO
+      const token = localStorage.getItem('token');
+      
       const response = await fetch(`${API_URL}/api/stock/editar/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // INYECCION PARA LA PETICION PUT CON EL TOKEN
+        },
         body: JSON.stringify(filaEditada)
       });
 
@@ -94,8 +115,14 @@ const GestionInventario = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
+          // VEMOS EL TOKEN PARA PODER ELIMINAR UN PRODUCTO 
+          const token = localStorage.getItem('token');
+          
           const response = await fetch(`${API_URL}/api/stock/eliminar/${id}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${token}` // INYECCION PARA LA PETICION DELETE CON EL TOKEN 
+            }
           });
           if (response.ok) {
             Swal.fire({ title: 'Eliminado', text: 'El artículo ha sido borrado.', icon: 'success', background: '#F3E7E4' });
@@ -122,7 +149,7 @@ const GestionInventario = () => {
   return (
     <div style={{ backgroundColor: '#F3E7E4', minHeight: '100vh', paddingBottom: '60px' }}>
       
-      {/* HERO SECTION ADMIN */}
+      {/* BANNER PARA EL STOCK ADMIN */}
       <div
         style={{
           background: 'linear-gradient(135deg, #16181D 0%, #1c1f26 60%, #0d0f12 100%)',
@@ -153,7 +180,7 @@ const GestionInventario = () => {
 
       <div className="container">
         
-        {/* FORMULARIO DE REGISTRO */}
+        {/* PARA REGISTRAR UN PRODUCTO(CREAR) */}
         <div className="card shadow-lg border-0 mb-5" style={{ borderRadius: '20px', overflow: 'hidden' }}>
           <div className="card-header border-0 py-3 px-4" style={{ backgroundColor: '#16181D' }}>
             <h5 className="mb-0 fw-bold" style={{ color: '#D4AF37', fontFamily: "'Georgia', serif" }}>Registrar Nuevo Artículo</h5>
@@ -194,7 +221,7 @@ const GestionInventario = () => {
           </div>
         </div>
 
-        {/* FILTROS DE BÚSQUEDA */}
+        {/* FILTROS DEL STOCK */}
         <div className="row g-3 mb-4">
           <div className="col-md-8">
             <div className="input-group shadow-sm" style={{ borderRadius: '15px', overflow: 'hidden' }}>
@@ -212,7 +239,7 @@ const GestionInventario = () => {
           </div>
         </div>
 
-        {/* TABLA DE INVENTARIO */}
+        {/* VISTA DEL INVENTARIO POR TABLAS */}
         <div className="card shadow-lg border-0" style={{ borderRadius: '20px', overflow: 'hidden' }}>
           <div className="card-body p-0">
             <div className="table-responsive">

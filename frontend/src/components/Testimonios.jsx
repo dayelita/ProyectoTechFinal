@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
-// Testimonios de respaldo si el backend está apagado
+// TESTIMOCIOS DEMO
 const TESTIMONIOS_DEMO = [
   { estrellas: 5, comentario: "Antes de conocerlos, organizar nuestro matrimonio era un estrés. Al llegar a Espacio Casona nos solucionaron todo con una atención increíble.", nombre: "Carlos R.", rol: "Novio" },
   { estrellas: 5, comentario: "Excelente lugar para eventos de empresa. Los salones son amplios y el entorno natural le dio un toque especial a nuestra jornada de capacitación.", nombre: "Elena V.", rol: "Recursos Humanos" },
@@ -14,7 +14,7 @@ const Testimonios = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   
-  // Estado del Modal
+  // ESTADO DE MODAL
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [rating, setRating] = useState(0);
   const [newText, setNewText] = useState('');
@@ -23,7 +23,7 @@ const Testimonios = () => {
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
 
-  // 🔥 1. Cargar testimonios desde Spring Boot al iniciar
+  // SE CARGAN TESTUMONIOS AL INICIAR
   useEffect(() => {
     cargarTestimonios();
   }, []);
@@ -42,7 +42,7 @@ const Testimonios = () => {
     }
   };
 
-  // 2. Efecto del Carrusel
+  // EL EFECTO DEL CARRUSEL 
   useEffect(() => {
     if (isPaused || testimonios.length === 0) return;
     const timer = setTimeout(() => {
@@ -51,11 +51,11 @@ const Testimonios = () => {
     return () => clearTimeout(timer);
   }, [isPaused, testimonios.length, currentIndex]);
 
-  // 3. Funciones de navegación
+  // NAVEGACION
   const handlePrev = () => setCurrentIndex((prevIndex) => (prevIndex - 1 + testimonios.length) % testimonios.length);
   const handleNext = () => setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonios.length);
 
-  // 🔥 4. Abrir Modal con Guardia de Seguridad
+  
   const handleOpenModal = () => {
     const idUsuario = localStorage.getItem('idUsuario');
     
@@ -88,7 +88,7 @@ const Testimonios = () => {
     setNewText('');
   };
 
-  // 🔥 5. Guardar Reseña enviándola al Backend
+  // SE GUARDA LA RESEÑA ENVIANDOSE AL BACKEND
   const handleSave = async () => {
     if (!rating || !newText.trim()) {
       Swal.fire({ 

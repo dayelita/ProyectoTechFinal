@@ -7,6 +7,7 @@ import MapaCasona from '../components/MapaCasona.jsx'
 function Inicio() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showAdminModal, setShowAdminModal] = useState(false);
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
 
   useEffect(() => {
     const rol = localStorage.getItem('rolUsuario');
@@ -22,7 +23,7 @@ function Inicio() {
       position: 'relative'
     }}>
       
-      {/* FONDO DIFUMINADO / DESTELLOS */}
+      {/* PARA EL FONDO DIFUMINADO */}
       <div style={{
         position: 'absolute', inset: 0,
         backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(212,175,55,0.09) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(212,175,55,0.06) 0%, transparent 40%)',
@@ -30,7 +31,7 @@ function Inicio() {
         zIndex: 0
       }} />
 
-      {/* INYECCIÓN DE ANIMACIONES CSS */}
+      {/* ANIMACIONES CSS */}
       <style>{`
         @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(30px); }
@@ -65,7 +66,7 @@ function Inicio() {
         }
       `}</style>
 
-      {/* Envolvemos el contenido en un div relativo para que esté sobre el fondo */}
+      {/* DIV PARA QUE ESTE SOBRE EL FONDO*/}
       <div style={{ position: 'relative', zIndex: 1 }}>
         <Banner />
         
@@ -88,9 +89,9 @@ function Inicio() {
           <div className="row g-4 justify-content-center mb-5">
             
             {isAdmin ? (
-              /* ========================================== */
-              /* VISTA ÚNICA EXCLUSIVA PARA EL ADMINISTRADOR*/
-              /* ========================================== */
+              
+              /* INICIO VISIBLE EXCLUSIVO DEL ADMIN */
+              
               <div className="col-12 col-md-8 col-lg-6 reveal-card delay-1">
                 <div className="card h-100 shadow-lg border-0 hover-lift" style={{ borderRadius: '15px', overflow: 'hidden', border: '2px solid #D4AF37', backgroundColor: '#1c1f26' }}>
                   <img 
@@ -115,9 +116,9 @@ function Inicio() {
                 </div>
               </div>
             ) : (
-              /* ========================================== */
-              /* VISTA DE 3 TARJETAS PARA EL PÚBLICO/CLIENTE*/
-              /* ========================================== */
+              
+              /* LAS CARDS PUBLICAS PARA LOS CLIENTES O VISITANTES */
+              
               <>
                 <div className="col-12 col-md-4 reveal-card delay-1">
                   <div className="card h-100 shadow-sm hover-lift" style={{ borderRadius: '15px', overflow: 'hidden', backgroundColor: '#1c1f26', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
@@ -190,18 +191,18 @@ function Inicio() {
           </div>
         </div>
         
-        {/* Secciones inferiores también con entrada suave */}
+        
         <div className="reveal-card delay-3">
           <Testimonios/>
           <MapaCasona/>   
         </div>
         
-        {/* ========================================== */}
-        {/* MODAL DEL ADMIN (CON ANIMACIÓN DE ENTRADA) */}
-        {/* ========================================== */}
+        
+        {/* PANEL DE ADMIN */}
+        
         {showAdminModal && (
           <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(22, 24, 29, 0.85)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1050, backdropFilter: 'blur(5px)', animation: 'fadeIn 0.3s ease' }}>
-            <div className="card p-5 shadow-lg border-0" style={{ width: '800px', maxWidth: '95%', borderRadius: '20px', backgroundColor: '#ffffff', animation: 'fadeInUp 0.4s ease-out' }}>
+            <div className="card p-5 shadow-lg border-0" style={{ width: '850px', maxWidth: '95%', borderRadius: '20px', backgroundColor: '#ffffff', animation: 'fadeInUp 0.4s ease-out' }}>
               
               <div className="text-center mb-5">
                 <h3 className="fw-bold" style={{ color: '#16181D', fontFamily: "'Georgia', serif" }}>Centro de Gestión JMS</h3>
@@ -209,11 +210,11 @@ function Inicio() {
                 <p className="text-muted mt-2">Selecciona el módulo que deseas administrar hoy</p>
               </div>
 
-              {/* AHORA ES UNA CUADRÍCULA DE 2x2 PARA LOS 4 MÓDULOS */}
-              <div className="row g-4">
+              
+              <div className="row g-4 justify-content-center">
                 
-                {/* Módulo 1: Reservas */}
-                <div className="col-12 col-md-6">
+                {/* MODULO DE RESERVAS */}
+                <div className="col-12 col-md-4">
                   <Link to="/agendaAdmin" className="text-decoration-none">
                     <div className="card h-100 text-center p-4 border-0 hover-lift" style={{ backgroundColor: '#F3E7E4', borderRadius: '15px' }}>
                       <h1 style={{ fontSize: '3rem', margin: 0 }}>📅</h1>
@@ -222,8 +223,8 @@ function Inicio() {
                   </Link>
                 </div>
 
-                {/* Módulo 2: Inventario */}
-                <div className="col-12 col-md-6">
+                {/* MODULO DE INVENTARIO */}
+                <div className="col-12 col-md-4">
                   <Link to="/stockAdmin" className="text-decoration-none">
                     <div className="card h-100 text-center p-4 border-0 hover-lift" style={{ backgroundColor: '#F3E7E4', borderRadius: '15px' }}>
                       <h1 style={{ fontSize: '3rem', margin: 0 }}>📦</h1>
@@ -232,8 +233,8 @@ function Inicio() {
                   </Link>
                 </div>
 
-                {/* Módulo 3: Galería */}
-                <div className="col-12 col-md-6">
+                {/* MODULO DE GALERIA  */}
+                <div className="col-12 col-md-4">
                   <Link to="/galeria" className="text-decoration-none">
                     <div className="card h-100 text-center p-4 border-0 hover-lift" style={{ backgroundColor: '#F3E7E4', borderRadius: '15px' }}>
                       <h1 style={{ fontSize: '3rem', margin: 0 }}>🖼️</h1>
@@ -242,12 +243,22 @@ function Inicio() {
                   </Link>
                 </div>
 
-                {/* Módulo 4: Servicios */}
-                <div className="col-12 col-md-6">
+                {/* MODULO DE SERVICIOS */}
+                <div className="col-12 col-md-4">
                   <Link to="/serviciosAdmin" className="text-decoration-none">
                     <div className="card h-100 text-center p-4 border-0 hover-lift" style={{ backgroundColor: '#F3E7E4', borderRadius: '15px' }}>
                       <h1 style={{ fontSize: '3rem', margin: 0 }}>🛎️</h1>
                       <h5 className="fw-bold mt-3" style={{ color: '#16181D', fontFamily: "'Georgia', serif" }}>Servicios</h5>
+                    </div>
+                  </Link>
+                </div>
+
+                {/* MODULO DE RESEÑAS */}
+                <div className="col-12 col-md-4">
+                  <Link to="/testimoniosAdmin" className="text-decoration-none">
+                    <div className="card h-100 text-center p-4 border-0 hover-lift" style={{ backgroundColor: '#F3E7E4', borderRadius: '15px' }}>
+                      <h1 style={{ fontSize: '3rem', margin: 0 }}>💬</h1>
+                      <h5 className="fw-bold mt-3" style={{ color: '#16181D', fontFamily: "'Georgia', serif" }}>Reseñas</h5>
                     </div>
                   </Link>
                 </div>

@@ -12,11 +12,11 @@ export default function MapaCasona() {
     `&q=Parcela+casas+santa+teresa+lote+1-A+Lonquen+Isla+de+Maipo`;
 
   return (
-    // Eliminamos el backgroundColor fijo para que herede el fondo de Inicio.jsx
+    
     <section className="mapa-section py-5 position-relative z-index-1">
       <div className="container">
 
-        {/* Encabezado adaptado a fondo oscuro */}
+       
         <div className="text-center mb-5 reveal-title">
           <h2 className="fw-bold" style={{ color: '#F3E7E4', fontFamily: "'Georgia', serif", fontSize: '2.5rem' }}>
             📍 ¿Cómo llegar?
@@ -27,7 +27,7 @@ export default function MapaCasona() {
           </p>
         </div>
 
-        {/* Mapa embebido con borde decorativo*/}
+        {/* BORDE DEL MAPA*/}
         <div
           className="shadow-lg rounded-4 overflow-hidden reveal-card delay-1"
           style={{ border: '2px solid #D4AF37', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}
@@ -44,10 +44,10 @@ export default function MapaCasona() {
           />
         </div>
 
-        {/* Info cards debajo del mapa (Modo Oscuro Glassmorphism) */}
+        {/* INFO DE CARDS DEBAJO DEL MAPA  */}
         <div className="row g-4 mt-4 text-center">
           
-          {/* Tarjeta Dirección */}
+          {/* MINI CARD DE LA UBICACION */}
           <div className="col-12 col-md-4 reveal-card delay-2">
             <div className="p-4 rounded-4 h-100 shadow-sm" style={{ backgroundColor: 'rgba(28, 31, 38, 0.8)', backdropFilter: 'blur(10px)', border: '1px solid rgba(212, 175, 55, 0.2)', borderTop: '3px solid #D4AF37', transition: 'transform 0.3s ease' }}
                  onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-5px)'}
@@ -62,7 +62,7 @@ export default function MapaCasona() {
             </div>
           </div>
           
-          {/* Tarjeta Teléfono */}
+          {/* MINI CARD DEL TELEFONO */}
           <div className="col-12 col-md-4 reveal-card delay-3">
             <div className="p-4 rounded-4 h-100 shadow-sm" style={{ backgroundColor: 'rgba(28, 31, 38, 0.8)', backdropFilter: 'blur(10px)', border: '1px solid rgba(212, 175, 55, 0.2)', borderTop: '3px solid #D4AF37', transition: 'transform 0.3s ease' }}
                  onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-5px)'}
@@ -73,7 +73,7 @@ export default function MapaCasona() {
             </div>
           </div>
           
-          {/* Tarjeta Email */}
+          {/* MINI CARD DEL MAIL */}
           <div className="col-12 col-md-4 reveal-card delay-3">
             <div className="p-4 rounded-4 h-100 shadow-sm" style={{ backgroundColor: 'rgba(28, 31, 38, 0.8)', backdropFilter: 'blur(10px)', border: '1px solid rgba(212, 175, 55, 0.2)', borderTop: '3px solid #D4AF37', transition: 'transform 0.3s ease' }}
                  onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-5px)'}
@@ -86,7 +86,7 @@ export default function MapaCasona() {
 
         </div>
 
-        {/* Botón para abrir Google Maps externo */}
+        {/* BOTON QUE ABRE GOOGLE MAPS EXTERNO  */}
         <div className="text-center mt-5 reveal-card delay-3">
           <a
             href="https://www.google.com/maps/search/Isla+de+Maipo+Lonquen+Parcela+Santa+Teresa"

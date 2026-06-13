@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 
-// Datos de prueba (Fallback) idénticos al catálogo público
+// DATOS DE PRUEBA
 const SERVICIOS_DEMO = [
   {
     id: 1, categoria: 'Espacios', nombre: 'Salón Principal',
@@ -27,13 +27,22 @@ export default function ServiciosAdmin() {
   const [servicios, setServicios] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // Estados para el Modal y Formulario
+  // ESTADOS DEL MODAL
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(getInitialFormData());
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
+
+  // CONTRUYE CABECERA CON EL TOKEN 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+  };
 
   function getInitialFormData() {
     return {
@@ -46,7 +55,7 @@ export default function ServiciosAdmin() {
       imagen: '',
       badge: '',
       badgeColor: '#D4AF37',
-      detalles: '' // Lo manejamos como un string separado por comas en el formulario
+      detalles: '' 
     };
   }
 
@@ -57,7 +66,11 @@ export default function ServiciosAdmin() {
   const cargarServicios = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/servicios/todos`);
+      // AGREGAMOS EL TOKEN A LA PETICION DE GET 
+      const token = localStorage.getItem('token');
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+
+      const response = await fetch(`${API_URL}/api/servicios/todos`, { headers });
       if (response.ok) {
         const data = await response.json();
         setServicios(data.length > 0 ? data : SERVICIOS_DEMO);
@@ -71,7 +84,6 @@ export default function ServiciosAdmin() {
     }
   };
 
-  // --- ABRIR MODALES ---
   const handleOpenCrear = () => {
     setFormData(getInitialFormData());
     setIsEditing(false);
@@ -87,18 +99,12 @@ export default function ServiciosAdmin() {
     setShowModal(true);
   };
 
-  // --- GUARDAR (CREAR O EDITAR) ---
   const handleGuardar = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Convertimos los detalles separados por coma en un array real para el backend
     const detallesArray = formData.detalles.split(',').map(d => d.trim()).filter(d => d !== '');
-    
-    const payload = {
-      ...formData,
-      detalles: detallesArray
-    };
+    const payload = { ...formData, detalles: detallesArray };
 
     try {
       const url = isEditing ? `${API_URL}/api/servicios/editar/${formData.id}` : `${API_URL}/api/servicios/crear`;
@@ -106,7 +112,7 @@ export default function ServiciosAdmin() {
 
       const response = await fetch(url, {
         method: method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(), // 
         body: JSON.stringify(payload)
       });
 
@@ -118,7 +124,6 @@ export default function ServiciosAdmin() {
         throw new Error('Error en la petición');
       }
     } catch (error) {
-      // Fallback local visual
       if (isEditing) {
         setServicios(prev => prev.map(s => s.id === formData.id ? payload : s));
       } else {
@@ -131,7 +136,6 @@ export default function ServiciosAdmin() {
     }
   };
 
-  // --- ELIMINAR ---
   const handleEliminar = (id) => {
     Swal.fire({
       title: '¿Eliminar tarjeta?',
@@ -147,7 +151,12 @@ export default function ServiciosAdmin() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await fetch(`${API_URL}/api/servicios/eliminar/${id}`, { method: 'DELETE' });
+          // SE AGREGA EL TOKEN A LA PETICION DE DELETE
+          const response = await fetch(`${API_URL}/api/servicios/eliminar/${id}`, { 
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+          });
+          
           if (response.ok) {
             Swal.fire({ title: 'Eliminado', icon: 'success', timer: 1500, showConfirmButton: false, background: '#F3E7E4' });
             cargarServicios();
@@ -165,7 +174,7 @@ export default function ServiciosAdmin() {
   return (
     <div style={{ backgroundColor: '#F3E7E4', minHeight: '100vh', paddingBottom: '60px' }}>
       
-      {/* HERO SECTION ADMIN */}
+      {/* BANNER DEL ADMIN  */}
       <div
         style={{
           background: 'linear-gradient(135deg, #16181D 0%, #1c1f26 60%, #0d0f12 100%)',
@@ -196,7 +205,7 @@ export default function ServiciosAdmin() {
 
       <div className="container" style={{ maxWidth: '1400px' }}>
         
-        {/* BARRA DE ACCIÓN */}
+        {/* BARRA DE CREAR TARJETA NUEVA*/}
         <div className="d-flex justify-content-end mb-4">
           <button 
             onClick={handleOpenCrear}
@@ -220,7 +229,7 @@ export default function ServiciosAdmin() {
             {servicios.map(servicio => (
               <div key={servicio.id} className="card border-0 d-flex flex-column" style={{ borderRadius: '15px', overflow: 'hidden', backgroundColor: '#ffffff', boxShadow: '0 4px 15px rgba(0,0,0,0.05)' }}>
                 
-                {/* 1. Preview de la Tarjeta (Estilo Público) */}
+                
                 <div style={{ position: 'relative', height: '210px', overflow: 'hidden' }}>
                   <img src={servicio.imagen || 'https://via.placeholder.com/800x600?text=Sin+Imagen'} alt={servicio.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(22,24,29,0.7) 0%, transparent 60%)' }} />
@@ -249,7 +258,7 @@ export default function ServiciosAdmin() {
                     </span>
                   </div>
 
-                  {/* 2. Barra de Acción Exclusiva del Admin */}
+                  {/* BARRA EXCLUSIVA DEL ADMIN */}
                   <div className="d-flex gap-2 mt-auto pt-3" style={{ borderTop: '1px solid #eee' }}>
                     <button onClick={() => handleOpenEditar(servicio)} className="btn btn-sm flex-fill fw-bold" style={{ border: '2px solid #16181D', color: '#16181D', borderRadius: '10px' }}>
                       ✏️ Editar
@@ -282,7 +291,7 @@ export default function ServiciosAdmin() {
               <form onSubmit={handleGuardar}>
                 <div className="row g-3">
                   
-                  {/* Datos Básicos */}
+                  {/* CAMPOS */}
                   <div className="col-md-8">
                     <label style={labelStyle}>NOMBRE DEL SERVICIO/ESPACIO</label>
                     <input type="text" className="form-control" style={inputStyle} value={formData.nombre} onChange={e => setFormData({...formData, nombre: e.target.value})} required />
@@ -300,7 +309,7 @@ export default function ServiciosAdmin() {
                     <textarea className="form-control" style={{...inputStyle, resize: 'none'}} rows="2" value={formData.descripcion} onChange={e => setFormData({...formData, descripcion: e.target.value})} required />
                   </div>
 
-                  {/* Etiquetas y Atributos */}
+                  {/* ETIQUETAS Y ATRIUTOS */}
                   <div className="col-md-6">
                     <label style={labelStyle}>CAPACIDAD (Ej: "200 personas")</label>
                     <input type="text" className="form-control" style={inputStyle} value={formData.capacidad} onChange={e => setFormData({...formData, capacidad: e.target.value})} required />
@@ -323,7 +332,7 @@ export default function ServiciosAdmin() {
                     </select>
                   </div>
 
-                  {/* Multimedia y Detalles extra */}
+                  {/* DETALLES EXREAS*/}
                   <div className="col-12">
                     <label style={labelStyle}>URL DE LA IMAGEN (Se recomienda Unsplash o tu servidor)</label>
                     <input type="url" className="form-control" style={inputStyle} value={formData.imagen} onChange={e => setFormData({...formData, imagen: e.target.value})} placeholder="https://..." required />
@@ -356,6 +365,6 @@ export default function ServiciosAdmin() {
   );
 }
 
-// Estilos locales reutilizables
+// ESTILOS REUTILIZABLES
 const inputStyle = { padding: '10px 14px', border: '1px solid #ddd', borderRadius: '8px', fontSize: '0.95rem' };
 const labelStyle = { display: 'block', marginBottom: '6px', color: '#16181D', fontWeight: 'bold', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px' };

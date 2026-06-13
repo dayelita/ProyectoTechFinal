@@ -50,7 +50,7 @@ export default function AgendaCliente() {
   };
 
   const handleSelectSlot = (slotInfo) => {
-    // 🛑 GUARDIA DE SEGURIDAD 🛑
+    //  GUARDIA DE SEGURIDAD (SOLO PERSONAS LOGEADAS AGENDARAN CITAS)
     if (!usuarioLogueado || !usuarioLogueado.id) {
       Swal.fire({
         title: '¡Únete a la familia JMS!',
@@ -71,7 +71,7 @@ export default function AgendaCliente() {
       return; 
     }
 
-    // ✅ Flujo normal si está logueado
+    // CUANDO ESTE LOGEADO PODRA SEGUIR EL FLUJO NORMAL 
     const ahora = dayjs();
     const inicio = dayjs(slotInfo.start);
     const fin = dayjs(slotInfo.end);
@@ -90,6 +90,10 @@ export default function AgendaCliente() {
 
   const handleSolicitarHora = async () => {
     setIsLoading(true);
+    
+   
+    const token = localStorage.getItem('token');
+
     const nuevaReserva = {
       title: `Reserva de ${usuarioLogueado.nombre} ${usuarioLogueado.apellido}`,
       fechaHoraInicio: dayjs(selectedSlot.start).format('YYYY-MM-DDTHH:mm:ss'),
@@ -100,9 +104,13 @@ export default function AgendaCliente() {
     try {
       const response = await fetch(`${API_URL}/api/reservas/crear`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
         body: JSON.stringify(nuevaReserva)
       });
+      
       if (response.ok) {
         Swal.fire({ icon: 'success', title: 'Solicitud Enviada', text: 'En revisión por el administrador.', confirmButtonColor: '#16181D', background: '#F3E7E4', color: '#16181D' });
         cargarReservas();
@@ -117,7 +125,7 @@ export default function AgendaCliente() {
     finally { setIsLoading(false); }
   };
 
-  // Filtrar eventos para el calendario
+  // FILTRA EVENTOS EN EL CALENDARIO
   const eventosCalendarioPrivado = events
     .filter(e => e.estado !== 'RECHAZADO')
     .map(e => {
@@ -135,7 +143,7 @@ export default function AgendaCliente() {
   return (
     <div style={{ backgroundColor: '#F3E7E4', minHeight: '100vh', paddingBottom: '60px' }}>
       
-      {/* 🔥 HERO SECTION (ESTILO PREMIUM) 🔥 */}
+      {/* BANNER PARA LA AGENDA CLIENTE */}
       <div
         style={{
           background: 'linear-gradient(135deg, #16181D 0%, #1c1f26 60%, #0d0f12 100%)',
@@ -166,10 +174,10 @@ export default function AgendaCliente() {
 
       <div className="container">
         
-        {/* Contenedor del Calendario */}
+        {/* CONTENEDOR DEL CALENDARIO */}
         <div className="card shadow-lg border-0 p-4 bg-white mb-5" style={{ borderRadius: '20px' }}>
           
-          {/* Estilos inyectados para react-big-calendar */}
+          {/* ESTILOS INYECTADOS DE REACT-BIG-CALENDAR  */}
           <style>{`
             .rbc-calendar { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
             .rbc-header { padding: 10px 0; font-weight: bold; color: #16181D; background-color: #f9f9f9; border-bottom: 2px solid #D4AF37; }
@@ -203,7 +211,7 @@ export default function AgendaCliente() {
           />
         </div>
 
-        {/* Mis Solicitudes */}
+        {/* SOLICITUDES DEL CLIENTE VISIBLES SOLO PARA EL*/}
         {usuarioLogueado && usuarioLogueado.id && (
           <div className="card shadow-sm border-0" style={{ borderRadius: '20px', backgroundColor: '#ffffff' }}>
             <div className="card-header bg-white border-0 pt-4 pb-0 px-4">
@@ -261,7 +269,7 @@ export default function AgendaCliente() {
 
       </div>
 
-      {/* MODAL DE CONFIRMACIÓN */}
+      {/* CONFIRMACION DE CITAS */}
       {isModalOpen && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(22, 24, 29, 0.85)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1050, backdropFilter: 'blur(5px)' }}>
           <div className="card p-5 shadow-lg border-0" style={{ width: '450px', borderRadius: '20px', backgroundColor: '#ffffff' }}>

@@ -14,15 +14,56 @@ export default function Perfil() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
 
-  // Cargar datos actuales desde localStorage al entrar a la página
+  //  CABECERA CON EL TOKEN JWT
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+  };
+
+  
   useEffect(() => {
-    setFormData(prev => ({
-      ...prev,
-      nombre: localStorage.getItem('nombreUsuario') || '',
-      apellido: localStorage.getItem('apellidoUsuario') || '',
-      correo: localStorage.getItem('correoUsuario') || '',
-      telefono: localStorage.getItem('telefonoUsuario') || '' 
-    }));
+    const cargarDatosReales = async () => {
+      const idUsuario = localStorage.getItem('idUsuario');
+      if (!idUsuario) return;
+
+      try {
+        const response = await fetch(`${API_URL}/api/usuarios/verificar/${idUsuario}`, {
+          headers: getAuthHeaders()
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          
+          // VALIDA CAMPO X CAMPO 
+          const nombreFinal = data.nombre || localStorage.getItem('nombreUsuario') || '';
+          const apellidoFinal = data.apellido || localStorage.getItem('apellidoUsuario') || '';
+          const correoFinal = data.correo || localStorage.getItem('correoUsuario') || '';
+          const telefonoFinal = data.telefono || localStorage.getItem('telefonoUsuario') || '';
+
+          // SE LLENA EL FORMULARIO 
+          setFormData(prev => ({
+            ...prev,
+            nombre: nombreFinal,
+            apellido: apellidoFinal,
+            correo: correoFinal,
+            telefono: telefonoFinal
+          }));
+          
+          // RESPALDO SEGURO, GUARDAMOS SI EL DATO EXISTE EN EL JSON 
+          if (data.nombre) localStorage.setItem('nombreUsuario', data.nombre);
+          if (data.apellido) localStorage.setItem('apellidoUsuario', data.apellido);
+          if (data.correo) localStorage.setItem('correoUsuario', data.correo);
+          if (data.telefono) localStorage.setItem('telefonoUsuario', data.telefono);
+        }
+      } catch (error) {
+        console.error("Error al obtener datos reales del perfil", error);
+      }
+    };
+
+    cargarDatosReales();
   }, []);
 
   const handleChange = (e) => {
@@ -32,7 +73,7 @@ export default function Perfil() {
   const handleGuardar = async (e) => {
     e.preventDefault();
 
-    // 1. Validamos contraseñas
+    // VALIDAMOS CONTRASEÑAS
     if (formData.password || formData.confirmPassword) {
       if (formData.password !== formData.confirmPassword) {
         Swal.fire({ 
@@ -50,12 +91,10 @@ export default function Perfil() {
     const idUsuario = localStorage.getItem('idUsuario');
 
     try {
-      // 2. Enviamos la petición a Spring Boot
+      // ENVIAMOS LA PETICION PUT AL SPRING CON EL TOKEN
       const response = await fetch(`${API_URL}/api/usuarios/actualizar/${idUsuario}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(), // Inyectamos la seguridad aquí
         body: JSON.stringify({
           nombre: formData.nombre,
           apellido: formData.apellido,
@@ -66,27 +105,27 @@ export default function Perfil() {
       });
 
       if (response.ok) {
-        const datosActualizados = await response.json();
+        // POR SI EL BACKEND NO DEVUELVE EL USUARIO 
+        // USAMOS FORMDATA DEVOLVERA LOS DATOS CORRECTOS 
         
-        // 3. Si Java dice "OK", actualizamos la memoria local
-        localStorage.setItem('nombreUsuario', datosActualizados.nombre);
-        localStorage.setItem('apellidoUsuario', datosActualizados.apellido);
-        localStorage.setItem('correoUsuario', datosActualizados.correo);
-        localStorage.setItem('telefonoUsuario', datosActualizados.telefono || '');
+        localStorage.setItem('nombreUsuario', formData.nombre);
+        localStorage.setItem('apellidoUsuario', formData.apellido);
+        localStorage.setItem('correoUsuario', formData.correo);
+        localStorage.setItem('telefonoUsuario', formData.telefono || '');
 
         Swal.fire({ 
           icon: 'success', 
           title: '¡Perfil actualizado!', 
-          text: 'Tus datos se guardaron correctamente.', 
+          text: 'Tus datos se guardaron en la base de datos correctamente.', 
           confirmButtonColor: '#16181D', 
           background: '#F3E7E4', 
           color: '#16181D' 
         });
         
-        // Limpiamos los campos de contraseña
+        // LIMPIA CAMPOS CONTRASEÑAS
         setFormData({ ...formData, password: '', confirmPassword: '' });
       } else {
-        throw new Error('Error al actualizar');
+        throw new Error('Error al actualizar en el servidor');
       }
 
     } catch (error) {
@@ -107,7 +146,7 @@ export default function Perfil() {
   return (
     <div style={{ backgroundColor: '#F3E7E4', minHeight: '100vh', position: 'relative', paddingBottom: '60px' }}>
       
-      {/* Fondo Superior Azul Noche para dar profundidad */}
+      {/* FONDO SUPERIOR AZUL  */}
       <div style={{
         position: 'absolute', top: 0, left: 0, right: 0, height: '350px',
         background: 'linear-gradient(135deg, #16181D 0%, #1c1f26 60%, #0d0f12 100%)',
@@ -126,7 +165,7 @@ export default function Perfil() {
           
           <div className="card-body p-4 p-md-5">
             
-            {/* Cabecera del Perfil */}
+            {/* CABEZA DEL PERFIL */}
             <div className="text-center mb-5">
               <div style={{ 
                 width: '85px', height: '85px', backgroundColor: '#16181D', 
@@ -135,7 +174,7 @@ export default function Perfil() {
                 border: '3px solid #D4AF37',
                 boxShadow: '0 8px 20px rgba(0,0,0,0.15)'
               }}>
-                {/* 🔥 SILUETA SVG DORADA PERFECTA 🔥 */}
+                {/* SVG DORADO DE PERFIL */}
                 <svg width="45" height="45" viewBox="0 0 24 24" fill="#D4AF37" xmlns="http://www.w3.org/2000/svg">
                   <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/>
                 </svg>
@@ -147,7 +186,7 @@ export default function Perfil() {
 
             <form onSubmit={handleGuardar}>
               
-              {/* Sección Datos Personales */}
+              {/* DATOS PERSONALES */}
               <h5 className="fw-bold mb-4" style={{ color: '#16181D', fontFamily: "'Georgia', serif", borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
                 Datos Personales
               </h5>
@@ -174,7 +213,7 @@ export default function Perfil() {
                 </div>
               </div>
 
-              {/* Sección Seguridad */}
+              {/* SEGURIDAD(CONTRASEÑAS)*/}
               <h5 className="fw-bold mb-2 mt-4" style={{ color: '#16181D', fontFamily: "'Georgia', serif", borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
                 Seguridad
               </h5>
@@ -192,7 +231,7 @@ export default function Perfil() {
                 </div>
               </div>
 
-              {/* Botón de Envío */}
+              {/* BOTON DE ENVIAR */}
               <button 
                 type="submit" 
                 className="btn w-100 fw-bold py-3 mt-2 shadow-sm" 

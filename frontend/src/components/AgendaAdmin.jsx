@@ -14,13 +14,26 @@ export default function AgendaAdmin() {
   const [pendientes, setPendientes] = useState([]);
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
 
+  // RECOGE EL TOKEN Y PREPARA LA CABECERA SEGURA 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+  };
+
   useEffect(() => {
     cargarDatos();
   }, []);
 
   const cargarDatos = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/reservas/todos`);
+      // AGREGAMOS EL TOKEN A LA PETICION GET (BUSCAR)
+      const response = await fetch(`${API_URL}/api/reservas/todos`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      
       if (response.ok) {
         const data = await response.json();
         const adaptados = data.map(res => ({
@@ -29,7 +42,7 @@ export default function AgendaAdmin() {
           end: new Date(res.fechaHoraFin)
         }));
         setEvents(adaptados);
-        // Ocultamos los bloqueos manuales de la tabla de pendientes
+        
         setPendientes(adaptados.filter(e => e.estado === 'PENDIENTE' && e.title !== '❌ Horario no disponible').sort((a,b) => a.start - b.start));
       }
     } catch (e) { 
@@ -54,9 +67,10 @@ export default function AgendaAdmin() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
+          // AGREGAMOS LA CABECERA A LA PETICION PATCH (ACTUALIZAR ESTADO)
           const response = await fetch(`${API_URL}/api/reservas/${id}/estado`, {
             method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
+            headers: getAuthHeaders(),
             body: JSON.stringify(nuevoEstado)
           });
           if (response.ok) {
@@ -77,7 +91,6 @@ export default function AgendaAdmin() {
     });
   };
 
-  // 🔥 FUNCIÓN PARA BLOQUEAR HORARIO (Al seleccionar espacio vacío)
   const handleSelectSlot = (slotInfo) => {
     const inicio = dayjs(slotInfo.start);
     const fin = dayjs(slotInfo.end);
@@ -108,9 +121,10 @@ export default function AgendaAdmin() {
         };
 
         try {
+          // AGREGAMOS LA CABECERA A LA PETICION POST (CREAR)
           const response = await fetch(`${API_URL}/api/reservas/crear`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: getAuthHeaders(),
             body: JSON.stringify(bloque)
           });
           if (response.ok) {
@@ -124,7 +138,6 @@ export default function AgendaAdmin() {
     });
   };
 
-  // 🔥 FUNCIÓN PARA DESBLOQUEAR / VER DETALLES (Al hacer clic en un evento)
   const handleSelectEvent = (event) => {
     if (event.title === '❌ Horario no disponible') {
       Swal.fire({
@@ -141,7 +154,11 @@ export default function AgendaAdmin() {
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
-            const response = await fetch(`${API_URL}/api/reservas/eliminar/${event.id}`, { method: 'DELETE' });
+            // AGREGAMOS LA CABECERA A LA PETICION DELETE (LIBERAR HORARIO)
+            const response = await fetch(`${API_URL}/api/reservas/eliminar/${event.id}`, { 
+              method: 'DELETE',
+              headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
             if (response.ok) {
               Swal.fire({ icon: 'success', title: 'Horario liberado', timer: 1500, showConfirmButton: false, background: '#F3E7E4', color: '#16181D' });
               cargarDatos();
@@ -163,16 +180,15 @@ export default function AgendaAdmin() {
     }
   };
 
-  // 🔥 ESTILO DE EVENTOS EN EL CALENDARIO
   const eventStyleGetter = (event) => {
-    let backgroundColor = '#D4AF37'; // Dorado para Pendientes
+    let backgroundColor = '#D4AF37'; 
     let color = '#16181D'; 
 
     if (event.title === '❌ Horario no disponible') {
-      backgroundColor = '#4b5563'; // Gris oscuro elegante para Bloqueados
+      backgroundColor = '#4b5563'; 
       color = '#F3E7E4'; 
     } else if (event.estado === 'APROBADO') {
-      backgroundColor = '#16181D'; // Azul Noche para Aprobados Reales
+      backgroundColor = '#16181D'; 
       color = '#D4AF37'; 
     }
 
@@ -192,7 +208,7 @@ export default function AgendaAdmin() {
   return (
     <div style={{ backgroundColor: '#F3E7E4', minHeight: '100vh', paddingBottom: '60px' }}>
       
-      {/* HERO SECTION ADMIN */}
+      {/* BANNER DE LA SECCION DEL ADMIN */}
       <div
         style={{
           background: 'linear-gradient(135deg, #16181D 0%, #1c1f26 60%, #0d0f12 100%)',
@@ -223,7 +239,7 @@ export default function AgendaAdmin() {
 
       <div className="container">
         
-        {/* 1. CALENDARIO MAESTRO */}
+        {/*  CALENDARIO ADMIN */}
         <div className="card shadow-lg border-0 p-4 bg-white mb-5" style={{ borderRadius: '20px' }}>
           <div className="d-flex justify-content-between align-items-center mb-4 px-2 flex-wrap gap-2">
             <h4 className="fw-bold m-0" style={{ color: '#16181D', fontFamily: "'Georgia', serif" }}>Vista de Ocupación</h4>
@@ -260,7 +276,7 @@ export default function AgendaAdmin() {
           />
         </div>
 
-        {/* 2. TABLA DE SOLICITUDES PENDIENTES */}
+        {/* SOLICITUDES PENDIENTES */}
         <div className="card shadow-sm border-0" style={{ borderRadius: '20px', overflow: 'hidden' }}>
           <div className="card-header border-0 pt-4 pb-3 px-4" style={{ backgroundColor: '#16181D' }}>
             <h4 className="fw-bold m-0" style={{ color: '#D4AF37', fontFamily: "'Georgia', serif" }}>

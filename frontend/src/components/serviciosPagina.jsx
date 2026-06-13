@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 
-// =============================================
-// DATOS DE RESPALDO (Fallback por si el backend falla)
-// =============================================
+
+// DATOS DE RESPALDO 
 const SERVICIOS_DEMO = [
   {
     id: 1, categoria: 'Espacios', nombre: 'Salón Principal',
@@ -33,9 +32,8 @@ const SERVICIOS_DEMO = [
 
 const categoriasTabs = ['Todos', 'Espacios', 'Servicios', 'Paquetes'];
 
-// =============================================
-// PÁGINA PRINCIPAL: CATÁLOGO DE SERVICIOS
-// =============================================
+// CATÁLOGO DE SERVICIOS
+
 export default function Catalogo() {
   const [servicios, setServicios] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -45,7 +43,7 @@ export default function Catalogo() {
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
 
-  // 🔥 1. Cargar servicios desde el backend al iniciar la página
+  // CARGA LOS SERVICIOS AL INICIAR
   useEffect(() => {
     cargarServicios();
   }, []);
@@ -58,17 +56,17 @@ export default function Catalogo() {
         const data = await response.json();
         setServicios(data.length > 0 ? data : SERVICIOS_DEMO);
       } else {
-        setServicios(SERVICIOS_DEMO); // Si hay error HTTP (ej. 500)
+        setServicios(SERVICIOS_DEMO); // USASO EN CASO DE ERRO HTTP 500
       }
     } catch (error) {
       console.error("No se pudo conectar al backend. Cargando datos de muestra.");
-      setServicios(SERVICIOS_DEMO); // Si el servidor está apagado
+      setServicios(SERVICIOS_DEMO); // SI EL BACKEND ESTA APAGADO
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔥 2. Filtrado dinámico según la pestaña seleccionada
+  //  FILTRO
   const serviciosFiltrados = categoriaActiva === 'Todos'
     ? servicios
     : servicios.filter(s => s.categoria === categoriaActiva);
@@ -78,7 +76,7 @@ export default function Catalogo() {
 
       <main style={{ flex: 1 }}>
 
-        {/* HERO SECTION */}
+        {/* BANNER DE SERVICIOS*/}
         <div style={{
           background: 'linear-gradient(135deg, #16181D 0%, #1c1f26 60%, #0d0f12 100%)', // 🔥 Azul Noche
           padding: '70px 20px 55px',
@@ -170,7 +168,7 @@ export default function Catalogo() {
                     cursor: 'pointer',
                   }}
                 >
-                  {/* Imagen de la tarjeta */}
+                  {/* IMAGEN DE LA CARD*/}
                   <div style={{ position: 'relative', height: '210px', overflow: 'hidden' }}>
                     <img
                       src={servicio.imagen || 'https://via.placeholder.com/800x600?text=Sin+Imagen'} 
@@ -201,7 +199,7 @@ export default function Catalogo() {
                     )}
                   </div>
 
-                  {/* Contenido de la tarjeta */}
+                  {/* CONTENIDO DE LA CARD*/}
                   <div className="card-body p-4 d-flex flex-column">
                     <h5 className="mb-2" style={{ color: '#16181D', fontFamily: 'Georgia, serif', fontWeight: 'bold', fontSize: '1.2rem' }}>
                       {servicio.nombre}
@@ -235,7 +233,7 @@ export default function Catalogo() {
           )}
         </div>
 
-        {/* BANNER INFERIOR LLAMADO A LA ACCIÓN */}
+        {/* BANNER INFERIOR */}
         <div style={{
           background: 'linear-gradient(135deg, #0d0f12 0%, #16181D 100%)',
           padding: '56px 20px',
@@ -283,7 +281,7 @@ export default function Catalogo() {
             className="card border-0 shadow-lg"
             style={{ width: '100%', maxWidth: '580px', maxHeight: '90vh', overflowY: 'auto', borderRadius: '20px', backgroundColor: '#ffffff' }}
           >
-            {/* Imagen modal */}
+            {/* IMAGEN MODAL */}
             <div style={{ position: 'relative', height: '230px', flexShrink: 0 }}>
               <img src={modalServicio.imagen || 'https://via.placeholder.com/800x600'} alt={modalServicio.nombre}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '20px 20px 0 0' }} />
