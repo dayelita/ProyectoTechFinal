@@ -8,7 +8,7 @@ const Footer = () => {
   return (
     <footer className="footer-main pt-5 pb-4 mt-auto">
 
-      {/* Botón scroll top */}
+      {/* BOTON PARA VOLVER AL TOP DE LA PANTALLA */}
       <button
         className="scroll-top-btn"
         onClick={scrollToTop}
@@ -21,7 +21,7 @@ const Footer = () => {
       <div className="container">
         <div className="row gy-4 text-center justify-content-center">
 
-          {/* Columna: Marca */}
+          {/* MARCA DE EMPRESA */}
           <div className="col-12 col-md-4">
             <h5 className="footer-brand mb-3">
               <span style={{ color: '#D4AF37' }}>🏡</span> Espacio Casona JMS
@@ -29,7 +29,7 @@ const Footer = () => {
             <p className="footer-text">
               Un espacio único en el corazón de Isla de Maipo, ideal para celebraciones, matrimonios y eventos corporativos rodeados de naturaleza.
             </p>
-            {/* Redes sociales */}
+            {/* REDES SOCIALES DE LA EMPRESA */}
             <div className="d-flex gap-3 justify-content-center mt-3">
               <a href="https://www.instagram.com/espaciocasona.jms/" className="social-icon" aria-label="Instagram">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -49,7 +49,7 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Columna: Navegación */}
+          {/* NAVEGACION DE LA PAGINA */}
           <div className="col-6 col-md-2">
             <h6 className="footer-heading mb-3">Navegación</h6>
             <ul className="footer-links">
@@ -60,7 +60,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Columna: Acceso */}
+          {/* PARA INICIAR O REGISTRAR UNA CUENTA  */}
           <div className="col-6 col-md-2">
             <h6 className="footer-heading mb-3">Cuenta</h6>
             <ul className="footer-links">
@@ -69,7 +69,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Columna: Contacto */}
+          {/* CONTACTO DE LA EMPRESA */}
           <div className="col-12 col-md-4">
             <h6 className="footer-heading mb-3">Contacto</h6>
             <ul className="footer-contact">
@@ -89,12 +89,8 @@ const Footer = () => {
           </div>
 
         </div>
-
-        {/* Divider */}
-        <hr className="footer-divider my-4" />
-
-        {/* Copyright */}
-        <div className="text-center">
+          <hr className="footer-divider my-4" />
+         <div className="text-center">
           <p className="footer-copy mb-0">
             © {new Date().getFullYear()} <strong style={{ color: '#16181D', fontFamily: "'Georgia', serif" }}>Espacio Casona JMS</strong> — Todos los derechos reservados.
           </p>

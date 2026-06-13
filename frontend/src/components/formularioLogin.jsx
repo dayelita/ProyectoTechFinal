@@ -33,11 +33,12 @@ const LoginUsuario = () => {
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.message || 'Correo o contraseña incorrectos');
+        const errorMessage = await response.text();
+        throw new Error(errorMessage || 'Correo o contraseña incorrectos');
       }
+
+      const data = await response.json();
 
       localStorage.setItem('token', data.token);
       
@@ -50,7 +51,7 @@ const LoginUsuario = () => {
          localStorage.setItem('rolUsuario', data.usuario.rol || 'USUARIO'); 
       }
 
-      // 🔥 ALERTA DE BIENVENIDA 🔥
+      // ALERTA DE INICIO DE SESION EXITOSO
       Swal.fire({
         icon: 'success',
         title: `¡Hola de nuevo, ${data.usuario?.nombre || 'Usuario'}!`,
@@ -66,7 +67,7 @@ const LoginUsuario = () => {
       });
 
     } catch (err) {
-      // 🔥 ALERTA DE CREDENCIALES INCORRECTAS 🔥
+      // ALERTA DE CREDENCIALES INCORRECTAS
       Swal.fire({
         icon: 'error',
         title: 'Acceso Denegado',
@@ -87,7 +88,7 @@ const LoginUsuario = () => {
         display: 'flex',
         alignItems: 'center',
         padding: '60px 15px', 
-        // 🔥 Fondo inmersivo idéntico al Registro 🔥
+        // FONDO DE LA PESTAÑA
         backgroundImage: `
           linear-gradient(to right, rgba(22, 24, 29, 0.92), rgba(22, 24, 29, 0.75)),
           url('https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1920&q=80')

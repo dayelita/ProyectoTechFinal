@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 
 const CATEGORIAS = ['Todos', 'Salones', 'Jardines', 'Matrimonios', 'Eventos', 'Gastronomía'];
 
-// Imágenes de muestra usando Unsplash (el backend real las reemplaza)
+// IMAGENES DEMO SERAN REMPLAZADAS SI EL BACKEND ESTA CONECTADO O ENCENDIDO
 const IMAGENES_DEMO = [
   { id: 1, url: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800', titulo: 'Salón Principal', categoria: 'Salones', descripcion: 'Salón central con capacidad para 200 personas' },
   { id: 2, url: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800', titulo: 'Jardines Exteriores', categoria: 'Jardines', descripcion: 'Amplios jardines para cócteles y fotografías' },
@@ -35,7 +35,7 @@ export default function GaleriaPublica() {
         const data = await response.json();
         setImagenes(data);
       } else {
-        // Fallback a demo si el backend no está disponible
+        // SI NO ESTA DISPONIBLE EL BACKEND HARA UN FALLBACK CON LAS IMAGENES DEMO 
         setImagenes(IMAGENES_DEMO);
       }
     } catch {
@@ -75,7 +75,7 @@ export default function GaleriaPublica() {
   return (
     <div style={{ backgroundColor: '#F3E7E4', minHeight: '100vh', paddingBottom: '60px' }}>
 
-      {/* Hero Section */}
+      {/* BANNER DE LA GALERIA PUBLICA*/}
       <div
         style={{
           background: 'linear-gradient(135deg, #16181D 0%, #1c1f26 60%, #0d0f12 100%)', // 🔥 Azul Noche
@@ -103,7 +103,7 @@ export default function GaleriaPublica() {
         </div>
       </div>
 
-      {/* Filtros */}
+      {/* FILTROS DE LAS IMAGENES */}
       <div style={{ padding: '35px 20px 10px', maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '35px' }}>
           {CATEGORIAS.map(cat => (
@@ -127,12 +127,12 @@ export default function GaleriaPublica() {
           ))}
         </div>
 
-        {/* Contador */}
+        {/* CONTADOR DE LAS IMAGENES */}
         <p style={{ textAlign: 'center', color: '#666', fontSize: '0.82rem', marginBottom: '30px', fontFamily: 'sans-serif' }}>
           Mostrando <strong style={{ color: '#16181D' }}>{imagenesFiltradas.length}</strong> {imagenesFiltradas.length === 1 ? 'imagen' : 'imágenes'}
         </p>
 
-        {/* Grid Masonry-style */}
+        {/* CARGADOR DE LA GALERIA */}
         {loading ? (
           <div style={{ textAlign: 'center', padding: '80px 0' }}>
             <div className="spinner-border" style={{ color: '#D4AF37', width: '3rem', height: '3rem' }} role="status">
@@ -215,19 +215,19 @@ export default function GaleriaPublica() {
         )}
       </div>
 
-      {/* Lightbox */}
+      {/* VISTA DE LAS IMAGENES */}
       {imagenActiva && (
         <div
           onClick={cerrarLightbox}
           style={{
             position: 'fixed', inset: 0,
-            backgroundColor: 'rgba(22,24,29,0.92)', // 🔥 Fondo Noche Profundo Inmersivo
+            backgroundColor: 'rgba(22,24,29,0.92)', 
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             zIndex: 2000, padding: '20px',
             backdropFilter: 'blur(5px)'
           }}
         >
-          {/* Botón Anterior */}
+          {/* BOTON PARA RETROCEDER */}
           <button
             onClick={e => { e.stopPropagation(); navLightbox(-1); }}
             style={navBtnStyle}
@@ -235,7 +235,7 @@ export default function GaleriaPublica() {
             onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = '#F3E7E4'; }}
           >❮</button>
 
-          {/* Imagen y detalle */}
+          {/* DETALLES DE LA IMAGEN */}
           <div
             onClick={e => e.stopPropagation()}
             style={{ maxWidth: '1000px', width: '100%', position: 'relative' }}
@@ -263,7 +263,7 @@ export default function GaleriaPublica() {
             </div>
           </div>
 
-          {/* Botón Siguiente */}
+          {/* BOTON PARA AVANZAR */}
           <button
             onClick={e => { e.stopPropagation(); navLightbox(1); }}
             style={navBtnStyle}
@@ -271,7 +271,7 @@ export default function GaleriaPublica() {
             onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = '#F3E7E4'; }}
           >❯</button>
 
-          {/* Botón cerrar */}
+          {/* BOTON PARA CERRAR */}
           <button
             onClick={cerrarLightbox}
             style={{

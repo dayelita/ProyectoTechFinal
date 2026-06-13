@@ -27,7 +27,7 @@ const RegistroUsuario = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // --- VALIDACIONES FRONTEND ---
+    // VALIDACIONES DE CAMPOS
     if (formData.nombre.trim().length < 3) {
       Swal.fire({ icon: 'warning', title: 'Nombre muy corto', text: 'El nombre debe tener al menos 3 caracteres válidos.', confirmButtonColor: '#16181D', background: '#F3E7E4' });
       setIsLoading(false);
@@ -54,7 +54,7 @@ const RegistroUsuario = () => {
         rol: 'USUARIO'
       };
       
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8081';
+     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8081';
 
       const response = await fetch(`${apiUrl}/api/usuarios`, {
         method: 'POST',
@@ -68,7 +68,7 @@ const RegistroUsuario = () => {
         throw new Error(data.message || 'Hubo un error al registrar el usuario en el servidor.');
       }
 
-      // 🔥 ALERTA DE ÉXITO PRECIOSA 🔥
+      // ALERTA DE REGISTRO EXITOSO
       Swal.fire({
         icon: 'success',
         title: '¡Bienvenido a la familia!',
@@ -107,7 +107,7 @@ const RegistroUsuario = () => {
         display: 'flex',
         alignItems: 'center',
         padding: '60px 15px', 
-        // 🔥 Nuevo fondo inmersivo elegante 🔥
+        // FONDO DE LA PESTAÑA
         backgroundImage: `
           linear-gradient(to right, rgba(22, 24, 29, 0.92), rgba(22, 24, 29, 0.75)),
           url('https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1920&q=80')

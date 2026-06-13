@@ -1,7 +1,5 @@
-/* ─── Footer Styles (Modo Claro - Casi Blanco y Azul Noche) ─── */
-
 .footer-main {
-  background-color: #F3E7E4; /* 🔥 Fondo Casi-Blanco */
+  background-color: #F3E7E4; 
   color: #16181D; /* Texto base oscuro */
   border-top: 1px solid rgba(212, 175, 55, 0.3); /* Línea dorada sutil arriba para separar del contenido */
 }

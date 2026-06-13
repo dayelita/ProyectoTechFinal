@@ -5,7 +5,7 @@ const CATEGORIAS = ['Salones', 'Jardines', 'Matrimonios', 'Eventos', 'Gastronom�
 const FORMATOS_VALIDOS = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_MB = 5;
 
-// Imágenes demo para desarrollo offline
+// IMAGENES DEMO ESTADO OFFLINE
 const IMAGENES_DEMO = [
   { id: 1, url: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800', titulo: 'Salón Principal', categoria: 'Salones', descripcion: 'Salón central con capacidad para 200 personas' },
   { id: 2, url: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800', titulo: 'Jardines Exteriores', categoria: 'Jardines', descripcion: 'Amplios jardines para cócteles y fotografías' },
@@ -18,7 +18,7 @@ export default function GaleriaAdmin() {
   const [filtro, setFiltro] = useState('Todas');
   const [vista, setVista] = useState('grid'); 
 
-  // Estado formulario upload
+  // ESTADO ACTUALIZADO
   const [showUpload, setShowUpload] = useState(false);
   const [archivoSeleccionado, setArchivoSeleccionado] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -26,12 +26,22 @@ export default function GaleriaAdmin() {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
 
-  // Estado edición
+  // ESTADO EDITANDO
   const [editando, setEditando] = useState(null); 
   const [formEdicion, setFormEdicion] = useState({});
 
   const inputFileRef = useRef();
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
+
+  // CONSTRUYE LA CABECERA DE AUTORIZACION (POST) 
+  const getAuthHeaders = (isJson = true) => {
+    const token = localStorage.getItem('token');
+    const headers = { 'Authorization': `Bearer ${token}` };
+    if (isJson) {
+      headers['Content-Type'] = 'application/json';
+    }
+    return headers;
+  };
 
   useEffect(() => {
     cargarImagenes();
@@ -40,7 +50,10 @@ export default function GaleriaAdmin() {
   const cargarImagenes = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/galeria/todas`);
+      // AGREGA EL TOKEN A LA PETICION GET (OBTENER)
+      const response = await fetch(`${API_URL}/api/galeria/todas`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
       if (response.ok) {
         setImagenes(await response.json());
       } else {
@@ -87,8 +100,10 @@ export default function GaleriaAdmin() {
     payload.append('descripcion', formData.descripcion);
 
     try {
+      // AGUREGAMOS EL TOKEN A LA PETICION POST NO FORZARA EL JSON SOBRE EL FORMDATA 
       const response = await fetch(`${API_URL}/api/galeria/subir`, {
         method: 'POST',
+        headers: getAuthHeaders(false), 
         body: payload,
       });
 
@@ -131,14 +146,17 @@ export default function GaleriaAdmin() {
 
   const guardarEdicion = async (id) => {
     try {
+      // AGREGAMOS EL TOKEN A LA PETICION PUT PARA EDITAR 
       const response = await fetch(`${API_URL}/api/galeria/editar/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(true),
         body: JSON.stringify(formEdicion),
       });
       
-      setImagenes(prev => prev.map(img => img.id === id ? { ...img, ...formEdicion } : img));
-      Swal.fire({ icon: 'success', title: 'Actualizado', timer: 1500, showConfirmButton: false, background: '#F3E7E4' });
+      if (response.ok) {
+        setImagenes(prev => prev.map(img => img.id === id ? { ...img, ...formEdicion } : img));
+        Swal.fire({ icon: 'success', title: 'Actualizado', timer: 1500, showConfirmButton: false, background: '#F3E7E4' });
+      }
     } catch {
       Swal.fire({ icon: 'error', title: 'Error al actualizar', background: '#F3E7E4' });
     } finally {
@@ -160,9 +178,16 @@ export default function GaleriaAdmin() {
     }).then(async (result) => {
       if (!result.isConfirmed) return;
       try {
-        await fetch(`${API_URL}/api/galeria/eliminar/${id}`, { method: 'DELETE' });
-        setImagenes(prev => prev.filter(img => img.id !== id));
-        Swal.fire({ icon: 'success', title: 'Imagen eliminada', timer: 1500, showConfirmButton: false });
+        // ASEGURAMOS EL TOKEN A LA PETICION DELETE
+        const response = await fetch(`${API_URL}/api/galeria/eliminar/${id}`, { 
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
+        
+        if (response.ok) {
+          setImagenes(prev => prev.filter(img => img.id !== id));
+          Swal.fire({ icon: 'success', title: 'Imagen eliminada', timer: 1500, showConfirmButton: false });
+        }
       } catch {
         Swal.fire('Error', 'No se pudo eliminar', 'error');
       }
@@ -173,8 +198,6 @@ export default function GaleriaAdmin() {
 
   return (
     <div className="container-fluid" style={{ backgroundColor: '#F3E7E4', minHeight: '100vh', padding: '0 0 60px' }}>
-
-      {/* Header Admin */}
       <div style={{
         background: 'linear-gradient(135deg, #16181D 0%, #1c1f26 100%)',
         padding: '35px 30px', marginBottom: '30px',
@@ -195,16 +218,12 @@ export default function GaleriaAdmin() {
             fontSize: '1rem', cursor: 'pointer', boxShadow: '0 4px 15px rgba(212,175,55,0.3)',
             transition: 'all 0.3s ease'
           }}
-          onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-          onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
         >
           ➕ Subir Nueva Imagen
         </button>
       </div>
 
       <div className="container" style={{ maxWidth: '1400px' }}>
-
-        {/* Filtros y controles */}
         <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-5">
           <div className="d-flex gap-2 flex-wrap">
             {['Todas', ...CATEGORIAS].map(cat => (
@@ -241,14 +260,12 @@ export default function GaleriaAdmin() {
           </div>
         </div>
 
-        {/* Contenido */}
         {loading ? (
           <div className="text-center py-5">
              <div className="spinner-border" style={{ color: '#D4AF37' }} role="status"></div>
              <p className="mt-3 text-muted">Cargando galería...</p>
           </div>
         ) : vista === 'grid' ? (
-          /* VISTA GRID */
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '25px' }}>
             {imagenesFiltradas.map(img => (
               <div key={img.id} className="card border-0 shadow-sm" style={{ borderRadius: '15px', overflow: 'hidden', backgroundColor: 'white' }}>
@@ -290,7 +307,6 @@ export default function GaleriaAdmin() {
             ))}
           </div>
         ) : (
-          /* VISTA LISTA */
           <div className="card border-0 shadow-sm" style={{ borderRadius: '15px', overflow: 'hidden' }}>
             <table className="table table-hover align-middle mb-0">
               <thead style={{ backgroundColor: '#16181D', color: '#F3E7E4' }}>
@@ -419,7 +435,6 @@ export default function GaleriaAdmin() {
   );
 }
 
-// Estilos Reutilizables
 const inputStyle = { width: '100%', padding: '12px 15px', border: '1px solid #ddd', borderRadius: '10px', fontSize: '0.95rem' };
 const labelStyle = { display: 'block', marginBottom: '8px', color: '#16181D', fontWeight: 'bold', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px' };
 const btnGuardarPrincipal = { flex: 2, padding: '14px', borderRadius: '30px', border: 'none', background: '#16181D', color: '#D4AF37', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.3s' };

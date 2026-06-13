@@ -3,7 +3,7 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import '../styles/navbarStyle.css';
 
-// 🔥 COMPONENTE INVISIBLE PARA FORZAR EL SCROLL AL INICIO
+// FORZARA LA CARGA AL INICIO 
 function ScrollToTop() {
   const { pathname } = useLocation();
 
@@ -23,37 +23,46 @@ export default function NavBar() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // 🔥 ESTADOS PARA EL USUARIO LOGUEADO
+  // ESTADOS PARA EL USUARIO LOGUEADO
   const [usuario, setUsuario] = useState(null);
   const [rolUsuario, setRolUsuario] = useState(null);
   const [verificando, setVerificando] = useState(false);
 
-  // =========================================================
-  // 🔥 VERIFICACIÓN SILENCIOSA CON EL BACKEND
-  // =========================================================
+  
+  // VERIFICACIÓN SILENCIOSA CON EL BACKEND
+  
   useEffect(() => {
     const id = localStorage.getItem('idUsuario');
     const nombre = localStorage.getItem('nombreUsuario');
+    const token = localStorage.getItem('token'); // Rescatamos el token
 
-    if (id) {
+    // Validamos que existan ambas cosas antes de preguntar al backend
+    if (id && token) {
       setUsuario(nombre);
       setVerificando(true);
 
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
       
-      fetch(`${API_URL}/api/usuarios/verificar/${id}`)
+      fetch(`${API_URL}/api/usuarios/verificar/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`, // Inyectamos el candado aquí
+          'Content-Type': 'application/json'
+        }
+      })
         .then(response => {
-          if (!response.ok) throw new Error("Sesión inválida o usuario no existe");
+          if (!response.ok) throw new Error("Sesión inválida o token expirado");
           return response.json();
         })
         .then(data => {
           const rolRealBD = data.rol;
+          
           setRolUsuario(rolRealBD); 
           localStorage.setItem('rolUsuario', rolRealBD); 
           setVerificando(false); 
         })
         .catch(error => {
           console.error("Error de seguridad al recargar:", error);
+          // Si el token es falso o expiró, lo expulsamos por seguridad
           localStorage.clear();
           setUsuario(null);
           setRolUsuario(null);
@@ -61,24 +70,25 @@ export default function NavBar() {
         });
 
     } else {
+      // Si no hay id o token de entrada, limpiamos la vista
       setUsuario(null);
       setRolUsuario(null);
       setVerificando(false);
     }
   }, [location]);
 
-  // 🔥 FUNCIÓN PARA CERRAR SESIÓN
+  // FUNCIÓN QUE CERRAR SESIÓN CON UNA ALERTA 
   const handleLogout = () => {
     Swal.fire({
       title: '¿Cerrar Sesión?',
       text: "Tendrás que volver a ingresar tus datos para agendar horas.",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#16181D', // Fondo noche para confirmar
-      cancelButtonColor: '#D4AF37', // Dorado para cancelar
+      confirmButtonColor: '#16181D', // 
+      cancelButtonColor: '#D4AF37', // 
       confirmButtonText: 'Sí, salir',
       cancelButtonText: 'Cancelar',
-      background: '#F3E7E4', // Fondo crema en la alerta
+      background: '#F3E7E4', // 
       color: '#16181D'
     }).then((result) => {
       if (result.isConfirmed) {
@@ -116,18 +126,18 @@ export default function NavBar() {
 
   return (
     <>
-      <ScrollToTop /> {/* 🔥 Activa el scroll automático en cada cambio de vista */}
+      <ScrollToTop /> {/* LA CARGA SERA AUTOMATICA EN CADA PESTAÑA  */}
       <nav
         className={`navbar navbar-expand-lg navbar-dark sticky-top ${scrolled ? 'navbar-scrolled' : ''}`}
         style={{
-          backgroundColor: '#16181D', // 🔥 Azul Noche Profundo
+          backgroundColor: '#16181D', 
           transition: 'box-shadow 0.3s ease',
           boxShadow: scrolled ? '0 4px 20px rgba(0,0,0,0.4)' : 'none',
         }}
       >
         <div className="container">
 
-          {/* LOGO Y MARCA EN DORADO CON GEORGIA */}
+          {/* LOGO Y MARCA EN DORADO (MIENTRAS ESPERAMOS EL LOGO OFICIAL DE LA PAGINA)*/}
           <NavLink className="navbar-brand d-flex align-items-center gap-2" to="/" style={{ color: '#D4AF37', fontFamily: "'Georgia', serif", fontWeight: 'bold' }}>
             <span style={{ fontSize: '1.4rem' }}>🏡</span>
             <span style={{ letterSpacing: '1px' }}>Espacio Casona JMS</span>
@@ -144,7 +154,7 @@ export default function NavBar() {
                 Inicio
               </NavLink>
 
-              {/* LINKS CONDICIONALES PROTEGIDOS */}
+              {/* LINKS PROTEGIDOS EXCLUSIVOS PARA EL ADMIN*/}
               {verificando ? (
                 <div className="d-flex align-items-center mx-3">
                   <div className="spinner-border spinner-border-sm" style={{ color: '#D4AF37' }} role="status">
@@ -165,6 +175,9 @@ export default function NavBar() {
                   <NavLink className={({ isActive }) => `nav-link nav-link-custom${isActive ? ' active-link' : ''}`} to="/serviciosAdmin">
                     Gestión Servicios
                   </NavLink>
+                  <NavLink className={({ isActive }) => `nav-link nav-link-custom${isActive ? ' active-link' : ''}`} to="testimoniosAdmin">
+                    Testimonios Admin
+                  </NavLink>
                 </>
               ) : (
                 <>
@@ -180,7 +193,7 @@ export default function NavBar() {
                 </>
               )}
 
-              {/* Separador vertical sutil */}
+              {/* SEPARADOR VERTICAL  */}
               <div className="d-none d-lg-block" style={{ width: '1px', height: '24px', backgroundColor: '#F3E7E4', opacity: 0.2, margin: '0 12px' }} />
 
               {/* BOTONES DE SESIÓN */}
@@ -210,7 +223,7 @@ export default function NavBar() {
                         e.currentTarget.style.color = '#D4AF37';
                       }}
                     >
-                      {/* 🔥 ÍCONO SVG REEMPLAZANDO EL EMOJI 🔥 */}
+                      {/* ÍCONO SVG REEMPLAZANDO EL EMOJI */}
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '6px', marginBottom: '2px' }} xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/>
                       </svg>
