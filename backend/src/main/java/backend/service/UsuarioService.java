@@ -21,7 +21,7 @@ public class UsuarioService {
         Optional<Usuario> exixstente = usuarioRepository.findByCorreo(usuario.getCorreo());
 
         if (exixstente.isPresent()){
-            throw new RuntimeException("Error: El correo " + usuario.getCorreo() + "ya esta regsitrado.");
+            throw new RuntimeException("Error: El correo " + usuario.getCorreo() + "ya esta registrado.");
         }
         return usuarioRepository.save(usuario);
     }

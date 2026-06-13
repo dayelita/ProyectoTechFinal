@@ -10,8 +10,10 @@
 	</parent>
 	<groupId>com.eventos</groupId>
 	<artifactId>backend</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name/>
+	<version>0.0.1</version>
+	<name>
+        backend
+    </name>
 	<description/>
 	<url/>
 	<licenses>

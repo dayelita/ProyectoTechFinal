@@ -13,13 +13,13 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    // 1. CORREO PARA TI (El Administrador)
+    //  CORREO PARA TI (El Administrador)
     public void enviarAvisoAdmin(String nombreCliente, String fecha, String hora) {
         try {
             MimeMessage mensaje = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
 
-            // 🔥 Aquí va tu correo personal como Admin
+            //  Aquí va tu correo personal como Admin
             helper.setTo("erammarcorojasp@gmail.com");
             helper.setSubject("🔔 Nueva Solicitud de Reserva - Casona JMS");
 
@@ -38,7 +38,7 @@ public class EmailService {
         }
     }
 
-    // 2. CORREO PARA EL CLIENTE (La Respuesta)
+    //  CORREO PARA EL CLIENTE (La Respuesta)
     public void enviarRespuestaCliente(String correoCliente, String nombreCliente, String fecha, String hora, boolean esAceptada) {
         try {
             MimeMessage mensaje = mailSender.createMimeMessage();

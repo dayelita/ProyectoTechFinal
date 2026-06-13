@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-
 public class TestimonioService {
     @Autowired
     private TestimonioRepository testimonioRepository;
@@ -15,10 +14,15 @@ public class TestimonioService {
     @Autowired
     private EmailService emailService;
 
+    // para que el admin vea ABSOLUTAMENTE TODOS
+    public List<Testimonio> obtenerTodosParaAdmin(){
+        return testimonioRepository.findAll();
+    }
+
     public List<Testimonio> obtenerTestimoniosAprobados(){
         return testimonioRepository.findByEstado("APROBADO");
-
     }
+
     public List<Testimonio> obtenerTestimoniosPendientes(){
         return testimonioRepository.findByEstado("PENDIENTE");
     }
@@ -27,7 +31,24 @@ public class TestimonioService {
         testimonio.setEstado("PENDIENTE");
         return testimonioRepository.save(testimonio);
     }
-    public void moderarTestimonio(Long id,boolean aprobado, String motivo){
+
+    //  para editar el texto
+    public Testimonio editarTestimonio(Long id, Testimonio detalles) {
+        return testimonioRepository.findById(id).map(t -> {
+            t.setNombre(detalles.getNombre());
+            t.setRol(detalles.getRol());
+            t.setComentario(detalles.getComentario());
+            t.setEstrellas(detalles.getEstrellas());
+            return testimonioRepository.save(t);
+        }).orElseThrow(() -> new RuntimeException("Testimonio no encontrado"));
+    }
+
+    //   para eliminar
+    public void eliminarTestimonio(Long id) {
+        testimonioRepository.deleteById(id);
+    }
+
+    public void moderarTestimonio(Long id, boolean aprobado, String motivo){
         Testimonio t = testimonioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Testimonio no encontrado"));
         if (aprobado){
@@ -40,16 +61,7 @@ public class TestimonioService {
 
         if(t.getUsuario() !=null && t.getUsuario().getCorreo() != null){
             String emailDestino = t.getUsuario().getCorreo();
-            emailService.enviarCorreoModeracionReseñas(
-                    emailDestino,
-                    t.getNombre(),
-                    aprobado,
-                    motivo
-            );
-
-        }else{
-            System.err.println("No se pudo enviar el correo: El testimonio no tiene un usuario asociado con email.");
+            emailService.enviarCorreoModeracionReseñas(emailDestino, t.getNombre(), aprobado, motivo);
         }
-
     }
 }
