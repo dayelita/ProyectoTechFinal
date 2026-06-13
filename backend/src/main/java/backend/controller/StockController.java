@@ -4,6 +4,7 @@ import backend.model.Stock;
 import backend.service.StockService; // Importamos el servicio
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,22 +15,24 @@ import java.util.List;
 public class StockController {
 
     @Autowired
-    private StockService stockService; // Usamos el Service ahora
+    private StockService stockService;
 
-    // 1. Cargar inventario
+    // Cargar inventario
     @GetMapping("/todos")
     public List<Stock> listarTodos() {
         return stockService.listarTodos();
     }
 
-    // 2. Agregar artículo
+    //  Agregar artículo
     @PostMapping("/crear")
+    @PreAuthorize("hasRole('ADMIN')")
     public Stock crear(@RequestBody Stock producto) {
         return stockService.guardar(producto);
     }
 
-    // 3. Editar artículo
+    // Editar artículo
     @PutMapping("/editar/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Stock> editar(@PathVariable Long id, @RequestBody Stock detallesProducto) {
         try {
             Stock actualizado = stockService.actualizar(id, detallesProducto);
@@ -41,6 +44,7 @@ public class StockController {
 
     // 4. Eliminar artículo
     @DeleteMapping("/eliminar/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> eliminar(@PathVariable Long id) {
         try {
             stockService.eliminar(id);

@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +23,7 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    // 🔥 Agregamos el repositorio para hacer consultas directas a la BD
+
     @Autowired
     private UsuarioRepository usuarioRepository;
 
@@ -31,6 +31,7 @@ public class UsuarioController {
     private JwtUtil jwtUtil;
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public List<Usuario> listarUsuarios(){
         return usuarioService.listarTodos();
     }
@@ -57,9 +58,9 @@ public class UsuarioController {
         return response;
     }
 
-    // ====================================================================
-    // 🔥 ENDPOINT: VERIFICACIÓN ESTRICTA DE ROL PARA EL FRONTEND
-    // ====================================================================
+
+    // VERIFICACIÓN ESTRICTA DE ROL PARA EL FRONTEND
+
     @GetMapping("/verificar/{id}")
     public ResponseEntity<?> verificarRol(@PathVariable Long id) {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
@@ -73,9 +74,9 @@ public class UsuarioController {
         }
     }
 
-    // ====================================================================
-    // 🔥 NUEVO ENDPOINT: ACTUALIZAR PERFIL DEL USUARIO
-    // ====================================================================
+
+    //  ACTUALIZAR PERFIL DEL USUARIO
+
     @PutMapping("/actualizar/{id}")
     public ResponseEntity<?> actualizarPerfil(@PathVariable Long id, @RequestBody Usuario usuarioActualizado) {
 

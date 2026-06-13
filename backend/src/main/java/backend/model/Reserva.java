@@ -11,7 +11,7 @@ public class Reserva {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 👇 ESTE ES EL CANDADO ANTI-DUPLICADOS (Optimistic Locking) 👇
+    // CANDADO ANTI-DUPLICADOS
     @Version
     private Long version;
 

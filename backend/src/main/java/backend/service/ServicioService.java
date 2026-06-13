@@ -14,18 +14,18 @@ public class ServicioService {
     @Autowired
     private ServicioRepository servicioRepository;
 
-    // 1. Obtener todos
+    // Obtiene todos
     public List<Servicio> obtenerTodos() {
         return servicioRepository.findAll();
     }
 
-    // 2. Crear nuevo
+    //  Crea nuevo servicio
     public Servicio crearServicio(Servicio servicio) {
         // Aquí en el futuro podrías agregar validaciones (ej. que el precio no sea negativo)
         return servicioRepository.save(servicio);
     }
 
-    // 3. Editar existente
+    //  Edita existentes
     public Optional<Servicio> editarServicio(Long id, Servicio servicioActualizado) {
         Optional<Servicio> servicioExistente = servicioRepository.findById(id);
 
@@ -46,7 +46,7 @@ public class ServicioService {
         return Optional.empty(); // Retorna vacío si no encontró el ID
     }
 
-    // 4. Eliminar
+    //  Elimina
     public boolean eliminarServicio(Long id) {
         if (servicioRepository.existsById(id)) {
             servicioRepository.deleteById(id);

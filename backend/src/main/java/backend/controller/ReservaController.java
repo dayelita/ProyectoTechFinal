@@ -4,6 +4,7 @@ import backend.model.Reserva;
 import backend.service.ReservaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,9 +30,29 @@ public class ReservaController {
     public ResponseEntity<List<Reserva>> obtenerTodas(){
         return ResponseEntity.ok(reservaService.obtenerTodas());
     }
+    @GetMapping("/ocupados")
+    public ResponseEntity<?> obtenerFechasOcupadas() {
+        // Busca todas las reservas reales de la base de datos
+        List<Reserva> todas = reservaService.obtenerTodas();
 
-    // 🔥 NUEVO ENDPOINT PARA ELIMINAR
+        // Las transforma en una lista de mapas "anónimos" sobre la marcha
+        List<java.util.Map<String, Object>> reservasAnonimas = todas.stream().map(reserva -> {
+            java.util.Map<String, Object> mapa = new java.util.HashMap<>();
+
+            // Estructuramos solo los datos que el calendario de React necesita ver
+            mapa.put("id", reserva.getId());
+            mapa.put("start", reserva.getFechaHoraInicio());
+            mapa.put("title", "Ocupado");          // Máscara para proteger la identidad del cliente
+
+            return mapa;
+        }).collect(java.util.stream.Collectors.toList());
+
+        //  Enviamos la lista limpia. Spring la transforma en JSON automáticamente
+        return ResponseEntity.ok(reservasAnonimas);
+    }
+    //  ENDPOINT PARA ELIMINAR
     @DeleteMapping("/eliminar/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> eliminar(@PathVariable Long id) {
         if (reservaService.eliminarReserva(id)) {
             return ResponseEntity.ok().build();
@@ -40,6 +61,7 @@ public class ReservaController {
     }
 
     @PatchMapping("/{id}/estado")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> actualizarEstado(@PathVariable Long id, @RequestBody String nuevoEstado){
         try{
             String estadoLimpio = nuevoEstado.replace("\"","");

@@ -69,15 +69,15 @@ public class GaleriaController {
         }
 
         try {
-            // 1. Nombre único para evitar colisiones
+            // Nombre único para evitar colisiones
             String extension  = obtenerExtension(file.getOriginalFilename());
             String nombreFile = UUID.randomUUID() + "." + extension;
             Path destino      = Paths.get(uploadDir).resolve(nombreFile);
 
-            // 2. Guardar en disco
+            //  Guardar en disco
             Files.copy(file.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
 
-            // 3. Persistir en BD
+            // 3Persiste en BD
             Galeria img = new Galeria();
             img.setTitulo(titulo);
             img.setCategoria(categoria);
