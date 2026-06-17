@@ -4,6 +4,7 @@ import backend.model.Servicio;
 import backend.service.ServicioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.Optional;
 @CrossOrigin(origins = "*")
 public class ServicioController {
 
-    // 🔥 Ahora inyectamos el Servicio, no el Repositorio
+    //  inyectamos el Servicio
     @Autowired
     private ServicioService servicioService;
 
@@ -24,12 +25,14 @@ public class ServicioController {
     }
 
     @PostMapping("/crear")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Servicio> crearServicio(@RequestBody Servicio servicio) {
         Servicio nuevoServicio = servicioService.crearServicio(servicio);
         return ResponseEntity.ok(nuevoServicio);
     }
 
     @PutMapping("/editar/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Servicio> editarServicio(@PathVariable Long id, @RequestBody Servicio servicioActualizado) {
         Optional<Servicio> servicioEditado = servicioService.editarServicio(id, servicioActualizado);
 
@@ -39,6 +42,7 @@ public class ServicioController {
     }
 
     @DeleteMapping("/eliminar/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> eliminarServicio(@PathVariable Long id) {
         boolean eliminado = servicioService.eliminarServicio(id);
 

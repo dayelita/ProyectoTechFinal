@@ -35,7 +35,7 @@ public class ReservaService {
             throw new Exception("Seguridad del Servidor: No se pueden agendar horas en el pasado.");
         }
 
-        // EVITAR CHOQUES DE HORARIO
+        // EVITA CHOQUES DE HORARIO
         List<Reserva> choques = reservaRepository.findOverlappingReservations(
                 nueva.getFechaHoraInicio(),
                 nueva.getFechaHoraFin()
@@ -82,7 +82,7 @@ public class ReservaService {
         return reservaRepository.findAll();
     }
 
-    // 🔥 NUEVO MeTODO PARA ELIMINAR BLOQUEOS/RESERVAS
+    // METODO PARA ELIMINAR BLOQUEOS/RESERVAS
     @Transactional(rollbackFor = Exception.class)
     public boolean eliminarReserva(Long id) {
         if (reservaRepository.existsById(id)) {

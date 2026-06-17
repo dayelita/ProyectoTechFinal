@@ -4,8 +4,8 @@ services:
     mem_limit: 512m
     ports:
     - "8081:8081"
-environment:
-  URL_DB: db-jms.ctivpsq8putv.us-east-1.rds.amazonaws.com:3306/espaciojms?createDatabaseIfNotExist=true&serverTimezone=America/Santiago
-  USER_DB: admin
-  PASSWORD_DB: 11111111
-restart: always
+  environment:
+    URL_DB: db-jms.ctivpsq8putv.us-east-1.rds.amazonaws.com:3306/espaciojms?createDatabaseIfNotExist=true&serverTimezone=America/Santiago
+    USER_DB: admin
+    PASSWORD_DB: 11111111
+  restart: always

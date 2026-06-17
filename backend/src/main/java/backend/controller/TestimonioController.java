@@ -5,7 +5,7 @@ import backend.service.TestimonioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +25,7 @@ public class TestimonioController {
 
     //  ENDPOINT ADMIN: Trae toda la base de datos sin filtrar
     @GetMapping("/admin/todos")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Testimonio>> obtenerTodosAdmin(){
         return ResponseEntity.ok(testimonioService.obtenerTodosParaAdmin());
     }
@@ -35,12 +36,14 @@ public class TestimonioController {
     }
 
     @GetMapping("/pendientes")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Testimonio>> obtenerPendientes(){
         return ResponseEntity.ok(testimonioService.obtenerTestimoniosPendientes());
     }
 
     // ENDPOINT ADMIN: Editar texto
     @PutMapping("/editar/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Testimonio> editar(@PathVariable Long id, @RequestBody Testimonio detalles){
         try {
             return ResponseEntity.ok(testimonioService.editarTestimonio(id, detalles));
@@ -51,6 +54,7 @@ public class TestimonioController {
 
     //  ENDPOINT ADMIN: Eliminar reseña
     @DeleteMapping("/eliminar/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> eliminar(@PathVariable Long id) {
         try {
             testimonioService.eliminarTestimonio(id);
@@ -61,6 +65,7 @@ public class TestimonioController {
     }
 
     @PutMapping("/moderar/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> moderar(@PathVariable Long id,@RequestBody Map<String, Object> payload){
         try{
             boolean aprobado = (boolean) payload.get("aprobado");
