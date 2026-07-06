@@ -36,7 +36,9 @@ public class SecurityConfig {
                                 "/api/usuarios/login",
                                 "/api/usuarios/registro",
                                 "/api/galeria/todas",
+                                "/uploads/**",
                                 "/api/servicios/todos",
+                                "/api/usuarios",
                                 "/api/testimonios/todos",
                                 "/api/reservas/todos"
                         ).permitAll()
@@ -45,6 +47,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/usuarios/verificar/**").authenticated()
                         .requestMatchers("/api/usuarios/actualizar/**").authenticated()
                         .requestMatchers("/api/stock/**").authenticated()
+                        .requestMatchers("/api/testimonios/crear").authenticated()
                         .requestMatchers("/api/galeria/subir", "/api/galeria/editar/**", "/api/galeria/eliminar/**").authenticated()
                         .requestMatchers("/api/servicios/crear", "/api/servicios/editar/**", "/api/servicios/eliminar/**").authenticated()
                         .requestMatchers("/api/reservas/**").authenticated()

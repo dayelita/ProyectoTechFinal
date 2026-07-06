@@ -19,10 +19,12 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Sube un nivel para mapear toda la carpeta "uploads/"
-        String raiz = uploadDir.replace("/galeria", "");
+        // Obtiene la ruta absoluta exacta en tu disco (ej: C:/Users/Marco/.../uploads/galeria)
+        String rutaAbsoluta = java.nio.file.Paths.get(uploadDir).toAbsolutePath().toUri().toString();
+
+        // Le dice a Spring: Lo que pidan en /uploads/galeria/** búscalo exactamente en esa carpeta física
         registry
-            .addResourceHandler("/uploads/**")
-            .addResourceLocations("file:" + raiz + "/");
+                .addResourceHandler("/uploads/galeria/**")
+                .addResourceLocations(rutaAbsoluta);
     }
 }
