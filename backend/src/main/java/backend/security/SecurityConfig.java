@@ -40,12 +40,16 @@ public class SecurityConfig {
                                 "/api/servicios/todos",
                                 "/api/usuarios",
                                 "/api/testimonios/todos",
-                                "/api/reservas/todos"
+                                "/api/reservas/todos",
+                                "/api/usuarios",
+                                "/api/usuarios/verificar/"
+
                         ).permitAll()
 
                         // RUTAS ADMINISTRATIVAS Y PRIVADAS (Requieren Token)
-                        .requestMatchers("/api/usuarios/verificar/**").authenticated()
+
                         .requestMatchers("/api/usuarios/actualizar/**").authenticated()
+                        .requestMatchers("/api/testimonios/crear").authenticated()
                         .requestMatchers("/api/stock/**").authenticated()
                         .requestMatchers("/api/testimonios/crear").authenticated()
                         .requestMatchers("/api/galeria/subir", "/api/galeria/editar/**", "/api/galeria/eliminar/**").authenticated()
