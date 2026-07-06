@@ -54,6 +54,8 @@ const RegistroUsuario = () => {
         rol: 'USUARIO'
       };
       
+      // ARREGLO DE CODIGO PARA PODER REGISTRAR SIN PROBLEMAS
+
      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8081';
 
       const response = await fetch(`${apiUrl}/api/usuarios`, {
@@ -61,8 +63,16 @@ const RegistroUsuario = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payloadParaServidor),
       });
+      
+      const textResponse = await response.text();
+      let data = {};
 
-      const data = await response.json();
+      try{
+        data = JSON.parse(textResponse);
+      }catch (jsonErr){
+        data = {message: textResponse};
+      }
+      // FIN DEL ARREGLO
 
       if (!response.ok) {
         throw new Error(data.message || 'Hubo un error al registrar el usuario en el servidor.');

@@ -107,31 +107,36 @@ const Testimonios = () => {
     const nombreUsuario = localStorage.getItem('nombreUsuario') || 'Usuario';
     const apellidoUsuario = localStorage.getItem('apellidoUsuario') || '';
     const idUsuario = localStorage.getItem('idUsuario');
+    const token = localStorage.getItem('token'); // <- RESCATE DE TOKEN JWT
 
     const nuevoTestimonio = {
       estrellas: rating,
       comentario: newText,
       nombre: `${nombreUsuario} ${apellidoUsuario}`.trim(),
       rol: 'Cliente Casona JMS', 
-      usuario: { id: idUsuario } 
+      usuario: { id: parseInt(idUsuario) } // EL ID VIAJARA COMO NUMERO SI EL BACKEND LO REQUIERE
     };
 
     try {
       const response = await fetch(`${API_URL}/api/testimonios/crear`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' ,
+          'Authorization': token ? `Bearer ${token}` : '' // SE INYECTA EL TOKEN ACA
+        },
         body: JSON.stringify(nuevoTestimonio)
       });
 
       if (response.ok) {
-        Swal.fire({ icon: 'success', title: '¡Gracias por tu reseña!', timer: 2000, showConfirmButton: false, background: '#F3E7E4', color: '#16181D' });
+        Swal.fire({ icon: 'success', title: '¡Gracias por tu reseña!', text:'Se ha enviado al panel de administración.', timer: 2500, showConfirmButton: false, background: '#F3E7E4', color: '#16181D' });
         cargarTestimonios(); 
       } else {
-        throw new Error('Error al guardar en BD');
+        const errorText = await response.text();
+        throw new Error(`Error del servidor (${response.status}): ${errorText}`);
       }
     } catch (error) {
-      setTestimonios([...testimonios, nuevoTestimonio]);
-      Swal.fire({ icon: 'success', title: '¡Reseña publicada! (Modo Local)', timer: 2000, showConfirmButton: false, background: '#F3E7E4', color: '#16181D' });
+      console.error("Error detallado al enviar testimonio:", error);
+
+      Swal.fire({ icon: 'error', title: 'no se pudo guardar en el servidor',text:'Hubo un problema de conexión o permisos con el backend. Revisa la consola.',confirmButtonColor: '#16181D', background: '#F3E7E4', color: '#16181D' });
     } finally {
       setIsSubmitting(false);
       handleCloseModal();
