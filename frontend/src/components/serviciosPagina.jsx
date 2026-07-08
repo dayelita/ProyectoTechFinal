@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink,useNavigate } from 'react-router-dom';
 
 
 // DATOS DE RESPALDO 
@@ -40,6 +40,8 @@ export default function Catalogo() {
   const [categoriaActiva, setCategoriaActiva] = useState('Todos');
   const [modalServicio, setModalServicio] = useState(null);
   const [hoveredCard, setHoveredCard] = useState(null);
+
+  const navigate = useNavigate(); //LINEA NUEVA PARA MOSTRAR SERVICIO
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
 
@@ -343,10 +345,14 @@ export default function Catalogo() {
               )}
 
               <div className="d-flex gap-2">
-                <NavLink to="/agendaCitas" className="btn fw-bold flex-fill"
-                  style={{ backgroundColor: '#16181D', color: '#D4AF37', borderRadius: '10px', border: 'none', padding: '12px' }}>
-                  Solicitar este servicio
-                </NavLink>
+                <button 
+                    type="button"
+                    onClick={() => navigate('/agendaCitas', { state: { servicioSeleccionado: modalServicio } })}
+                    className="btn fw-bold flex-fill"
+                    style={{ backgroundColor: '#16181D', color: '#D4AF37', borderRadius: '10px', border: 'none', padding: '12px', cursor: 'pointer' }}
+>
+  Solicitar este servicio
+</button>
                 <a href="https://wa.me/56976011067" target="_blank" rel="noopener noreferrer"
                   className="btn fw-semibold flex-fill"
                   style={{ backgroundColor: 'transparent', color: '#16181D', border: '2px solid #16181D', borderRadius: '10px', padding: '12px' }}>

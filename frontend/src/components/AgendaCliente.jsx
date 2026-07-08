@@ -4,7 +4,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import dayjs from 'dayjs';
 import "dayjs/locale/es";
 import Swal from 'sweetalert2';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useLocation } from 'react-router-dom';
 
 dayjs.locale("es");
 const localizer = dayjsLocalizer(dayjs);
@@ -18,6 +18,10 @@ export default function AgendaCliente() {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate(); 
+  const location = useLocation(); // CAPTURAMOS LA RUTA 
+
+  const servicioSeleccionado = location.state?.servicioSeleccionado || null;
+
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
 
   const minTime = dayjs().set('hour', 9).set('minute', 0).toDate();
@@ -98,7 +102,8 @@ export default function AgendaCliente() {
       title: `Reserva de ${usuarioLogueado.nombre} ${usuarioLogueado.apellido}`,
       fechaHoraInicio: dayjs(selectedSlot.start).format('YYYY-MM-DDTHH:mm:ss'),
       fechaHoraFin: dayjs(selectedSlot.end).format('YYYY-MM-DDTHH:mm:ss'),
-      usuario: { id: usuarioLogueado.id }
+      usuario: { id: usuarioLogueado.id },
+      servicio: servicioSeleccionado ? { id: servicioSeleccionado.id} : null //CLAVE PARA EL BACK
     };
 
     try {
@@ -230,6 +235,7 @@ export default function AgendaCliente() {
                     <thead style={{ backgroundColor: '#16181D', color: '#F3E7E4' }}>
                       <tr>
                         <th style={{ borderTopLeftRadius: '10px', border: 'none', padding: '15px' }}>Fecha</th>
+                        <th style={{ border: 'none', padding: '15px' }}>Servicio</th>
                         <th style={{ border: 'none', padding: '15px' }}>Horario</th>
                         <th style={{ borderTopRightRadius: '10px', border: 'none', padding: '15px' }}>Estado</th>
                       </tr>
@@ -239,6 +245,9 @@ export default function AgendaCliente() {
                         <tr key={res.id} style={{ borderBottom: '1px solid #f0f0f0' }}>
                           <td className="fw-bold" style={{ color: '#16181D', padding: '15px' }}>
                             {capitalize(dayjs(res.start).format('dddd, DD/MM/YYYY'))}
+                          </td>
+                          <td style={{ color: '#16181D', padding: '15px', fontWeight: '500' }}> 
+                            {res.servicio?.nombre || 'General / No especificado'}
                           </td>
                           <td style={{ color: '#555', padding: '15px' }}>
                             {dayjs(res.start).format('HH:mm')} - {dayjs(res.end).format('HH:mm')}
@@ -278,6 +287,12 @@ export default function AgendaCliente() {
             <p className="text-center text-muted mb-4 small">Revisa los detalles antes de enviar tu solicitud</p>
             
             <div className="alert text-center border-0 mb-4" style={{ backgroundColor: '#F3E7E4', color: '#16181D', borderRadius: '15px', padding: '20px' }}>
+              {servicioSeleccionado && (
+                <div style={{ fontSize: '1.2rem', marginBottom: '10px', color: '#16181D', fontWeight: 'bold' }}>
+                   Servicio: <span style={{ color: '#b8962e' }}>{servicioSeleccionado.nombre}</span>
+                  <hr style={{ margin: '10px 0', borderColor: 'rgba(0,0,0,0.1)' }} />
+                </div>
+              )}
               <div style={{ fontSize: '1.2rem', marginBottom: '5px' }}>
                 <strong style={{ color: '#D4AF37' }}>📅 Fecha:</strong> {dayjs(selectedSlot.start).format('DD/MM/YYYY')}
               </div>
